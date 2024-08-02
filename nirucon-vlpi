@@ -351,6 +351,27 @@ export GTK4_SETTINGS="$HOME/.config/gtk-4.0/settings.ini"' ~/.xinitrc
     fi
 }
 
+# Function: Install Fastfetch
+install_fastfetch() {
+    # Install dependencies
+    sudo xbps-install -Sy cmake gcc pkg-config
+
+    # Clone Fastfetch repository
+    git clone https://github.com/fastfetch-cli/fastfetch.git
+    cd fastfetch
+
+    # Build and install Fastfetch
+    mkdir -p build
+    cd build
+    cmake ..
+    cmake --build . --target fastfetch
+    sudo cmake --install . --prefix /usr/local
+
+    # Cleanup
+    cd ../..
+    rm -rf fastfetch
+}
+
 # Main function to execute the script
 main() {
     check_internet_connection
@@ -388,6 +409,7 @@ main() {
     install_suckless
     install_grub_theme
     install_themes_icons
+    install_fastfetch
 
     echo "Cleaning up temporary files..."
     rm -fr ~/Git/dunstrc ~/Git/nirubar-dwm ~/Git/nirucon-suckless ~/Git/nirucon-death-grubtheme
