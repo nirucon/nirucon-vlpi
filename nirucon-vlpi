@@ -142,13 +142,13 @@ install_suckless() {
         mkdir -p ~/Git && git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
         mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
 
-        declare -a repos=("nirubar-dwm" "dunstrc" "nirucon-dmenu" "sverigesradio-dmenu" "srpod-dmenu" "srplay-dmenu" "dwmexit-dmenu" "havamal" "wifi-dmenu" "system-optimizer-dmenu")
+        declare -a repos=("nirubar-dwm-void" "dunstrc" "nirucon-dmenu" "sverigesradio-dmenu" "srpod-dmenu" "srplay-dmenu" "dwmexit-dmenu" "havamal" "wifi-dmenu" "system-optimizer-dmenu")
         for repo in "${repos[@]}"; do
             rm -rf ~/Git/$repo
             git clone https://github.com/nirucon/$repo ~/Git/$repo
         done
 
-        cp -rf ~/Git/nirubar-dwm/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
+        cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
         cp -rf ~/Git/dunstrc/* ~/.config/dunst
         cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
 
@@ -163,7 +163,17 @@ install_suckless() {
         cp -f ~/Git/nirucon-suckless/.bash_aliases_void ~/
         cp -rf ~/Git/nirucon-suckless/nirucon-wallpapers ~/Pictures/
         sudo cp -f ~/Git/nirucon-suckless/issue /etc/
-        chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm/nirubar-dwm ~/.config/nirucon-greeter/greeter
+        chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void ~/.config/nirucon-greeter/greeter
+
+        # Insert nirubar-dwm in .xinitrc
+        line_to_insert="~/.config/suckless/nirubar-dwm/nirubar-dwm-void &"
+        comment_line="# Start nirubar-dwm-*"
+        if [[ -f ~/.xinitrc ]]; then
+          sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
+          echo "Line inserted successfully."
+        else
+          echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+        fi
 
         # nirucon-dmenu - dmenu scripts launcher
         echo "Cloning and installing the 'nirucon-dmenu' script..."
@@ -449,7 +459,8 @@ main() {
     install_mononoki
 
     echo "Cleaning up temporary files..."
-    rm -fr ~/Git/dunstrc ~/Git/nirubar-dwm ~/Git/nirucon-suckless ~/Git/nirucon-death-grubtheme
+    rm -fr ~/Git/dunstrc ~/Git/nirubar-dwm-void ~/Git/nirucon-suckless ~/Git/nirucon-death-grubtheme
+
     echo "NIRUCON-VLPI Void Linux Post Install script completed - NOW BE CREATIVE!"
     echo "Start nirucon-suckless with the command: startx"
 }
