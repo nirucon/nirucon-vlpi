@@ -48,6 +48,7 @@ install_if_needed() {
 
 # Function: Optimize system settings
 optimize_system_conf() {
+    sudo xbps-install -Rs void-repo-nonfree &
     sudo xbps-install -Syu
 }
 
