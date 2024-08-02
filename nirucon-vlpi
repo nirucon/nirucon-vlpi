@@ -439,12 +439,31 @@ install_mononoki() {
 
 # Function: Install pipewire
 install_pipewire() {
-    # Update repositories and install necessary packages
-    sudo xbps-install -S pipewire libspa-bluetooth pipewire-pulse alsa-pipewire
+    # Function to check if a package is installed
+    package_installed() {
+        xbps-query -Rs "$1" > /dev/null 2>&1
+    }
+
+    # Check if pipewire and related packages are already installed
+    packages=("pipewire" "libspa-bluetooth" "pipewire-pulse" "alsa-pipewire")
+    packages_to_install=()
+
+    for pkg in "${packages[@]}"; do
+        if ! package_installed "$pkg"; then
+            packages_to_install+=("$pkg")
+        fi
+    done
+
+    if [ ${#packages_to_install[@]} -eq 0 ]; then
+        echo "Pipewire and related packages are already installed."
+    else
+        # Install necessary packages
+        sudo xbps-install -S "${packages_to_install[@]}"
+    fi
 
     # Enable Pipewire services
-    sudo ln -s /etc/sv/pipewire /var/service/
-    sudo ln -s /etc/sv/pipewire-pulse /var/service/
+    sudo ln -s /etc/sv/pipewire /var/service/ 2>/dev/null
+    sudo ln -s /etc/sv/pipewire-pulse /var/service/ 2>/dev/null
 
     # Add user to necessary groups
     sudo usermod -aG _pipewire,pulse,pulse-access "$USER"
