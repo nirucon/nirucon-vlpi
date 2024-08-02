@@ -351,8 +351,14 @@ export GTK4_SETTINGS="$HOME/.config/gtk-4.0/settings.ini"' ~/.xinitrc
     fi
 }
 
+# Final additions
+    echo "Now some final installations, we are soon done..."
+
 # Function: Install Fastfetch
 install_fastfetch() {
+    # Print info
+    echo "Cloning and installaing fastfetch..."
+
     # Install dependencies
     sudo xbps-install -Sy cmake gcc pkg-config
 
@@ -374,6 +380,9 @@ install_fastfetch() {
 
 # Function: Install Mononoki Nerd Font
 install_mononoki() {
+    # Print info
+    echo "Installing mononoki font..."
+
     # Install fontconfig if not already installed
     sudo xbps-install -Sy fontconfig
 
