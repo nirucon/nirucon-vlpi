@@ -372,6 +372,33 @@ install_fastfetch() {
     rm -rf fastfetch
 }
 
+# Function: Install Mononoki Nerd Font
+install_mononoki() {
+    # Install fontconfig if not already installed
+    sudo xbps-install -Sy fontconfig
+
+    # Create the fonts directory if it doesn't exist
+    mkdir -p ~/.local/share/fonts
+
+    # Navigate to the fonts directory
+    cd ~/.local/share/fonts
+
+    # Download the Mononoki Nerd Font zip file
+    wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Mononoki.zip
+
+    # Unzip the downloaded font file
+    unzip Mononoki.zip
+
+    # Remove the zip file after extraction
+    rm Mononoki.zip
+
+    # Update the font cache
+    fc-cache -fv
+
+    # Print a success message
+    echo "Mononoki Nerd Font installed successfully!"
+}
+
 # Main function to execute the script
 main() {
     check_internet_connection
@@ -410,6 +437,7 @@ main() {
     install_grub_theme
     install_themes_icons
     install_fastfetch
+    install_mononoki
 
     echo "Cleaning up temporary files..."
     rm -fr ~/Git/dunstrc ~/Git/nirubar-dwm ~/Git/nirucon-suckless ~/Git/nirucon-death-grubtheme
