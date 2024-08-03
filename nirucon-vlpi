@@ -56,7 +56,7 @@ install_core_suckless() {
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
         libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal \
         xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
-        cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl \
+        cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl dunst \
         pamixer spotifyd playerctl jq
     
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
@@ -89,6 +89,69 @@ install_fonts() {
             echo "${font_dirs[$i]} is already installed."
         fi
     done
+}
+
+# Function: Clone and install nirucon-suckless and related files, scripts, and dot files
+install_suckless() {
+    echo "Installing nirucon-suckless, configurations and scripts..."
+    mkdir -p ~/Git && git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
+    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
+
+    declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "dwmexit-dmenu" "havamal")
+    for repo in "${repos[@]}"; do
+        rm -rf ~/Git/$repo
+        git clone https://github.com/nirucon/$repo ~/Git/$repo
+    done
+
+    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
+    cp -rf ~/Git/dunstrc/* ~/.config/dunst
+    cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
+
+    declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
+    for dir in "${suckless_dirs[@]}"; do
+        sudo make -C ~/.config/suckless/$dir clean install
+    done
+
+    cp -f ~/Git/nirucon-suckless/.xinitrc ~/
+    cp -f ~/Git/nirucon-suckless/autostart.sh ~/.dwm
+    cp -f ~/Git/nirucon-suckless/.bashrc ~/
+    cp -f ~/Git/nirucon-suckless/.bash_aliases_void ~/
+    cp -rf ~/Git/nirucon-suckless/nirucon-wallpapers ~/Pictures/
+    sudo cp -f ~/Git/nirucon-suckless/issue /etc/
+    chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void ~/.config/nirucon-greeter/greeter
+
+    # Insert nirubar-dwm in .xinitrc
+    line_to_insert="~/.config/suckless/nirubar-dwm-arch/nirubar-dwm-void &"
+    comment_line="# Start nirubar-dwm-*"
+    if [[ -f ~/.xinitrc ]]; then
+        sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
+        echo "Line inserted successfully."
+    else
+        echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+    fi
+
+    # srplay-dmenu - dmenu script for SR play podcasts and radio
+    echo "Cloning and installing the 'srplay-dmenu' script..."
+    rm -rf ~/Git/srplay-dmenu
+    git clone https://github.com/nirucon/srplay-dmenu ~/Git/srplay-dmenu
+    sudo cp -f ~/Git/srplay-dmenu/srplay-dmenu /usr/local/bin/
+    sudo chmod +x /usr/local/bin/srplay-dmenu
+    rm -rf ~/Git/srplay-dmenu
+
+    # dwmexit-dmenu - dmenu script for suspend, logout, restart, reboot
+    # placeholder
+
+    # havamal - script for random quotes in .bashrc
+    echo "Installing havamal script..."
+    rm -rf ~/Git/havamal
+    git clone https://github.com/nirucon/havamal ~/Git/havamal
+    mkdir -p ~/.config/havamal
+    cp -fr ~/Git/havamal/* ~/.config/havamal/
+    chmod +x ~/.config/havamal/havamal
+    rm -rf ~/Git/havamal
+    echo "The 'havamal' script has been installed and the repository has been removed."
+
+    echo "nirucon-suckless, configurations and scripts installed successfully."
 }
 
 # Function: Prompt for reboot
