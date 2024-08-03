@@ -55,7 +55,9 @@ install_core_suckless() {
     sudo xbps-install -Syu
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
         libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal \
-        xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom
+        xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
+        cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl \
+        pamixer spotifyd playerctl
     
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
