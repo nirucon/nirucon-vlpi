@@ -54,33 +54,23 @@ enable_services() {
     sudo ln -s /etc/sv/acpid /var/service
 }
 
-# Function: Install nirucon-suckless
+# Function: Install nirucon-suckless and configurations
 setup_suckless() {
     echo "Installing nirucon-suckless and configurations..."
 
     # Create necessary directories
-    mkdir -p ~/Git && git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
-    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
+    mkdir -p ~/Git ~/.config/suckless ~/.dwm ~/.config/dunst
+    git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
 
-    # Clone repositories
+    # Clone and copy repositories
     declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "havamal")
     for repo in "${repos[@]}"; do
-        rm -rf ~/Git/$repo
         git clone https://github.com/nirucon/$repo ~/Git/$repo
+        cp -rf ~/Git/$repo ~/.config/suckless/
     done
 
     # Copy configurations and scripts
-    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
-    cp -rf ~/Git/dunstrc/* ~/.config/dunst
-    cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
-
-    # Build and install suckless tools
-    declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
-    for dir in "${suckless_dirs[@]}"; do
-        sudo make -C ~/.config/suckless/$dir clean install
-    done
-
-    # Copy dotfiles and configuration files
+    cp -rf ~/Git/nirucon-suckless/* ~/.config/suckless/
     cp -f ~/Git/nirucon-suckless/.xinitrc ~/
     cp -f ~/Git/nirucon-suckless/autostart.sh ~/.dwm
     cp -f ~/Git/nirucon-suckless/.bashrc ~/
@@ -98,10 +88,6 @@ setup_suckless() {
     else
         echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
     fi
-
-    # Clean up cloned repositories
-    echo "Cleaning up cloned repositories..."
-    rm -rf ~/Git/nirucon-suckless ~/Git/nirubar-dwm-void ~/Git/dunstrc ~/Git/srplay-dmenu ~/Git/havamal
 }
 
 # Function: Install Havamal script
@@ -109,7 +95,6 @@ install_havamal() {
     echo "Installing Havamal script..."
     git clone https://github.com/nirucon/havamal
     mkdir -p ~/.config/havamal
-    rm -rf ~/.config/havamal/havamal
     mv havamal/havamal ~/.config/havamal/
     chmod +x ~/.config/havamal/havamal
 }
@@ -126,7 +111,6 @@ install_srplay_dmenu() {
 install_grub_theme() {
     read -p "Do you want to install a custom grub theme - nirucon-death? [Y/n]: " grub_response
     grub_response=${grub_response,,}
-
     if [[ "$grub_response" =~ ^(yes|y| ) ]] || [[ -z "$grub_response" ]]; then
         echo "Installing custom grub theme..."
         git clone https://github.com/nirucon/nirucon-death-grubtheme ~/Git/nirucon-death-grubtheme
@@ -145,7 +129,6 @@ install_dunst_config() {
     echo "Installing Nirucon Dunst Configuration..."
     git clone https://github.com/nirucon/dunstrc
     mkdir -p ~/.config/dunst
-    rm -rf ~/.config/dunst/dunstrc
     mv dunstrc/dunstrc ~/.config/dunst/
 }
 
@@ -180,7 +163,7 @@ install_rofi_theme() {
 # Function: Clean up
 clean_up() {
     echo "Cleaning up..."
-    rm -rf nirucon-suckless nirubar-dwm-void havamal srplay-dmenu ~/Git/nirucon-death-grubtheme dunstrc
+    rm -rf ~/Git/nirucon-suckless ~/Git/nirubar-dwm-void ~/Git/havamal ~/Git/srplay-dmenu ~/Git/nirucon-death-grubtheme ~/Git/dunstrc
 }
 
 # Function: Reboot the system
