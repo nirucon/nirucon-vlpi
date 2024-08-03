@@ -47,11 +47,11 @@ prompt_reboot() {
 
 # Function: Install repos
 install_repos() {
-    echo "Adding additional repositories and installing necessary tools..."
+    echo "Adding nonfree repository and installing necessary tools..."
 
-    # Update package list and install core dependencies
+    # Update package list and install nonfree repository
     sudo xbps-install -Syu
-    sudo xbps-install -y git base-devel
+    sudo xbps-install -y void-repo-nonfree
 
     # Check if the void-packages repository is already cloned
     if [ ! -d "$HOME/void-packages" ]; then
@@ -65,21 +65,24 @@ install_repos() {
         echo "xbps-src repository already cloned."
     fi
 
-    # Check if the repositories are already added
-    if ! grep -q "https://alpha.de.repo.voidlinux.org/current" /etc/xbps.d/99-repository.conf 2>/dev/null; then
-        # Add community repositories
-        sudo tee /etc/xbps.d/99-repository.conf <<EOF
-repository=https://alpha.de.repo.voidlinux.org/current
-repository=https://alpha.de.repo.voidlinux.org/current/multilib
-repository=https://alpha.de.repo.voidlinux.org/current/multilib/nonfree
-repository=https://alpha.de.repo.voidlinux.org/current/nonfree
-repository=https://alpha.de.repo.voidlinux.org/current/debug
-EOF
-        echo "Repositories added successfully."
-    else
-        echo "Repositories already configured."
-    fi
+    echo "Nonfree repository and tools installed successfully."
+
+    # Uncomment the following lines to add more usable Void Linux repositories
+    # add_more_repos
 }
+
+# Sub-function to add more repositories
+# add_more_repos() {
+#     echo "Adding additional repositories..."
+#     sudo tee /etc/xbps.d/10-repository.conf <<EOF
+# repository=https://repo-us.voidlinux.org/current
+# repository=https://repo-us.voidlinux.org/current/multilib
+# repository=https://repo-us.voidlinux.org/current/multilib/nonfree
+# repository=https://repo-us.voidlinux.org/current/nonfree
+# repository=https://repo-us.voidlinux.org/current/debug
+# EOF
+#     echo "Additional repositories added successfully."
+# }
 
 # Function: Install core dependencies for suckless (dwm, st, dmenu, slock) and minimal Xorg setup
 install_core_suckless() {
