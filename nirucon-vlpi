@@ -70,12 +70,26 @@ EOF
     echo -e "\e[32mRepositories and tools installed successfully!\e[0m"
 }
 
+# Function: Install core dependencies for suckless (dwm, st, dmenu, slock) and minimal Xorg setup
+install_core_suckless() {
+    echo "Installing core dependencies for suckless and minimal Xorg setup..."
+
+    # Update package list and install core dependencies
+    sudo xbps-install -Syu
+    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
+                         freetype-devel fontconfig-devel xorg-server xorg-xinit \
+                         xorg-xsetroot xorg-fonts xorg-apps wget
+
+    echo -e "\e[32mCore dependencies for suckless and minimal Xorg setup installed successfully!\e[0m"
+}
+
 # Main function
 main() {
     display_welcome
     check_internet_connection
     confirm_proceed
     install_repos
+    install_core_suckless
     # Add additional functions here as needed
     prompt_reboot
 }
