@@ -171,6 +171,7 @@ main() {
     install_repos
     install_core_suckless
     install_fonts
+    install_suckless
     prompt_reboot
 }
 
