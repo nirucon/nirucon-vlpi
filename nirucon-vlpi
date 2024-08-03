@@ -57,44 +57,53 @@ enable_services() {
 # Function: Setup suckless tools
 setup_suckless_tools() {
     echo "Setting up suckless tools..."
-    git clone https://github.com/nirucon/nirucon-suckless
-    mkdir -p ~/.config/suckless
-    rm -rf ~/.config/suckless/dwm ~/.config/suckless/st ~/.config/suckless/dmenu ~/.config/suckless/slock
-    mv nirucon-suckless/dwm ~/.config/suckless/
-    mv nirucon-suckless/st ~/.config/suckless/
-    mv nirucon-suckless/dmenu ~/.config/suckless/
-    mv nirucon-suckless/slock ~/.config/suckless/
-    cd ~/.config/suckless/dwm && sudo make install
-    cd ~/.config/suckless/st && sudo make install
-    cd ~/.config/suckless/dmenu && sudo make install
-    cd ~/.config/suckless/slock && sudo make install
+    
+    # Clone the repository
+    if git clone https://github.com/nirucon/nirucon-suckless; then
+        mkdir -p ~/.config/suckless
+        rm -rf ~/.config/suckless/dwm ~/.config/suckless/st ~/.config/suckless/dmenu ~/.config/suckless/slock
+        
+        # Move the directories if they exist
+        if [ -d "nirucon-suckless/dwm" ]; then
+            mv nirucon-suckless/dwm ~/.config/suckless/
+        fi
+        if [ -d "nirucon-suckless/st" ]; then
+            mv nirucon-suckless/st ~/.config/suckless/
+        fi
+        if [ -d "nirucon-suckless/dmenu" ]; then
+            mv nirucon-suckless/dmenu ~/.config/suckless/
+        fi
+        if [ -d "nirucon-suckless/slock" ]; then
+            mv nirucon-suckless/slock ~/.config/suckless/
+        fi
 
-    # Move configuration files
-    echo "Moving configuration files..."
-    mkdir -p ~/.dwm
-    mv -f nirucon-suckless/autostart.sh ~/.dwm
-    cp -f nirucon-suckless/.xinitrc ~/
-    cp -f nirucon-suckless/.bashrc ~/
-    cp -f nirucon-suckless/.bash-aliases-void ~/
-    sudo cp -f nirucon-suckless/issue /etc/
+        # Build and install the tools
+        cd ~/.config/suckless/dwm && sudo make install
+        cd ~/.config/suckless/st && sudo make install
+        cd ~/.config/suckless/dmenu && sudo make install
+        cd ~/.config/suckless/slock && sudo make install
 
-    # Clone and install Nirucon DWM Bar
-    echo "Installing Nirucon DWM Bar..."
-    git clone https://github.com/nirucon/nirubar-dwm-void
-    mkdir -p ~/.config/suckless/nirubar-dwm-void
-    rm -rf ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void
-    mv nirubar-dwm-void/nirubar-dwm-void ~/.config/suckless/nirubar-dwm-void/
-    chmod +x ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void
+        # Move configuration files if they exist
+        echo "Moving configuration files..."
+        mkdir -p ~/.dwm
+        [ -f "nirucon-suckless/autostart.sh" ] && mv -f nirucon-suckless/autostart.sh ~/.dwm
+        [ -f "nirucon-suckless/.xinitrc" ] && cp -f nirucon-suckless/.xinitrc ~/
+        [ -f "nirucon-suckless/.bashrc" ] && cp -f nirucon-suckless/.bashrc ~/
+        [ -f "nirucon-suckless/.bash-aliases-void" ] && cp -f nirucon-suckless/.bash-aliases-void ~/
+        [ -f "nirucon-suckless/issue" ] && sudo cp -f nirucon-suckless/issue /etc/
 
-    # Insert Nirucon DWM Bar in .xinitrc
-    echo "Configuring Nirucon DWM Bar in .xinitrc..."
-    line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
-    comment_line="# Start nirubar-dwm-*"
-    if [[ -f ~/.xinitrc ]]; then
-        sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
-        echo "Line inserted successfully."
+        # Insert Nirucon DWM Bar in .xinitrc
+        echo "Configuring Nirucon DWM Bar in .xinitrc..."
+        line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
+        comment_line="# Start nirubar-dwm-*"
+        if [[ -f ~/.xinitrc ]]; then
+            sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
+            echo "Line inserted successfully."
+        else
+            echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+        fi
     else
-        echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+        echo "Failed to clone the nirucon-suckless repository. Please check your internet connection or the repository URL."
     fi
 }
 
