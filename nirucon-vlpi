@@ -73,10 +73,10 @@ setup_suckless_tools() {
     echo "Moving configuration files..."
     mkdir -p ~/.dwm
     mv -f nirucon-suckless/autostart.sh ~/.dwm
-    mv -f nirucon-suckless/.xinitrc ~/
-    mv -f nirucon-suckless/.bashrc ~/
-    mv -f nirucon-suckless/.bash-aliases-void ~/
-    sudo mv -f nirucon-suckless/issue /etc/
+    cp -f nirucon-suckless/.xinitrc ~/
+    cp -f nirucon-suckless/.bashrc ~/
+    cp -f nirucon-suckless/.bash-aliases-void ~/
+    sudo cp -f nirucon-suckless/issue /etc/
 
     # Clone and install Nirucon DWM Bar
     echo "Installing Nirucon DWM Bar..."
