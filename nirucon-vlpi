@@ -51,7 +51,7 @@ install_packages() {
     local packages=(
         xorg xorg-server xorg-xinit xorg-xrandr xorg-setroot noto-fonts-ttf noto-fonts-emoji playerctl \
         pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano alsa-utils \
-        pavucontrol xarchiver xclip htop curl libnotify jq bc make gcc libX11-devel libXft-devel libXinerama-devel
+        pavucontrol xarchiver xclip htop curl libnotify jq bc make gcc libX11-devel libXft-devel libXinerama-devel libXrandr-devel
     )
 
     echo "Installing essential packages via xbps..."
