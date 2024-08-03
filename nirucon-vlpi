@@ -65,12 +65,15 @@ install_repos() {
 
 # Function: Install core dependencies for suckless (dwm, st, dmenu, slock) and minimal Xorg setup
 install_core_suckless() {
-    echo "Installing core dependencies for suckless and minimal Xorg setup..."
+    echo "Installing core dependencies for suckless, minimal Xorg setup and some essential packages..."
 
     # Update package list and install core dependencies
     sudo xbps-install -Syu
+    # core
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xorg-fonts xrdb
-    echo -e "\e[32mCore dependencies for suckless and minimal Xorg setup installed successfully!\e[0m"
+    # essential
+    sudo xbps-install -y nano unzip wget
+    echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup and some essential package installed!\e[0m"
 }
 
 # Function: Prompt for reboot
