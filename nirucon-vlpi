@@ -45,29 +45,40 @@ prompt_reboot() {
     fi
 }
 
-# Function: Install additional repositories and tools
+# Function: Install repos
 install_repos() {
     echo "Adding additional repositories and installing necessary tools..."
+
+    # Update package list and install core dependencies
     sudo xbps-install -Syu
     sudo xbps-install -y git base-devel
 
-    # Clone the xbps-src repository
-    git clone https://github.com/void-linux/void-packages.git ~/void-packages
+    # Check if the void-packages repository is already cloned
+    if [ ! -d "$HOME/void-packages" ]; then
+        # Clone the xbps-src repository
+        git clone https://github.com/void-linux/void-packages.git ~/void-packages
 
-    # Set up the build environment
-    cd ~/void-packages
-    ./xbps-src binary-bootstrap
+        # Set up the build environment
+        cd ~/void-packages
+        ./xbps-src binary-bootstrap
+    else
+        echo "xbps-src repository already cloned."
+    fi
 
-    # Add community repositories
-    sudo tee /etc/xbps.d/99-repository.conf <<EOF
+    # Check if the repositories are already added
+    if ! grep -q "https://alpha.de.repo.voidlinux.org/current" /etc/xbps.d/99-repository.conf 2>/dev/null; then
+        # Add community repositories
+        sudo tee /etc/xbps.d/99-repository.conf <<EOF
 repository=https://alpha.de.repo.voidlinux.org/current
 repository=https://alpha.de.repo.voidlinux.org/current/multilib
 repository=https://alpha.de.repo.voidlinux.org/current/multilib/nonfree
 repository=https://alpha.de.repo.voidlinux.org/current/nonfree
 repository=https://alpha.de.repo.voidlinux.org/current/debug
 EOF
-
-    echo -e "\e[32mRepositories and tools installed successfully!\e[0m"
+        echo "Repositories added successfully."
+    else
+        echo "Repositories already configured."
+    fi
 }
 
 # Function: Install core dependencies for suckless (dwm, st, dmenu, slock) and minimal Xorg setup
