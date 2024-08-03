@@ -39,12 +39,12 @@ add_repos() {
 # Function: Install core packages
 install_core_packages() {
     echo "Installing core packages..."
+    sudo xbps-install -S base-devel libX11-devel libXft-devel libXinerama-devel freetype-devel fontconfig-devel imlib2 --yes
     sudo xbps-install -S xorg-minimal xorg-video-drivers xorg-input-drivers xorg-server xorg-apps --yes
-    sudo xbps-install -S alsa-utils pulseaudio pavucontrol pipewire pipewire-alsa pipewire-pulse pipewire-jack --yes
-    sudo xbps-install -S dwm dmenu st slock arandr suckless-tools --yes
+    sudo xbps-install -S pipewire pipewire-devel alsa-pipewire wireplumber pipewire-pulse alsa-utils --yes
     sudo xbps-install -S acpi acpid tlp powertop --yes
     sudo xbps-install -S NetworkManager network-manager-applet --yes
-    sudo xbps-install -S font-awesome-ttf nerd-fonts-mononoki --yes
+    sudo xbps-install -S font-awesome nerd-fonts --yes
 }
 
 # Function: Enable necessary services
