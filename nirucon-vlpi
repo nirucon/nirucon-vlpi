@@ -38,7 +38,7 @@ confirm_proceed() {
 
 # Function: Install repos
 install_repos() {
-    echo "Adding nonfree repository and installing necessary tools..."
+    echo "Adding nonfree repository..."
 
     # Update package list and install nonfree repository
     sudo xbps-install -Syu
