@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Nirucon-VLPI: Post Install Script for Void Linux (glibc)
-# Author: Nicklas Rudolfsson https://github.com/nirucon n@rudolfsson.net
+# Nirucon-VLPI: Post Install script for Void Linux (glibc)
+# Author: Nicklas Rudolfsson
 # Version: 2024-08-03
 # License: Feel free to use and modify, donate if you want :) https://www.paypal.com/paypalme/nicklasrudolfsson
 # Disclaimer: I do not have any responsibility at all for this script and changes on your system!
@@ -59,6 +59,7 @@ setup_suckless_tools() {
     echo "Setting up suckless tools..."
     git clone https://github.com/nirucon/nirucon-suckless
     mkdir -p ~/.config/suckless
+    rm -rf ~/.config/suckless/dwm ~/.config/suckless/st ~/.config/suckless/dmenu ~/.config/suckless/slock
     mv nirucon-suckless/dwm ~/.config/suckless/
     mv nirucon-suckless/st ~/.config/suckless/
     mv nirucon-suckless/dmenu ~/.config/suckless/
@@ -71,16 +72,17 @@ setup_suckless_tools() {
     # Move configuration files
     echo "Moving configuration files..."
     mkdir -p ~/.dwm
-    mv nirucon-suckless/autostart.sh ~/.dwm
-    mv nirucon-suckless/.xinitrc ~/
-    mv nirucon-suckless/.bashrc ~/
-    mv nirucon-suckless/.bash-aliases-void ~/
-    sudo mv nirucon-suckless/issue /etc/
+    mv -f nirucon-suckless/autostart.sh ~/.dwm
+    mv -f nirucon-suckless/.xinitrc ~/
+    mv -f nirucon-suckless/.bashrc ~/
+    mv -f nirucon-suckless/.bash-aliases-void ~/
+    sudo mv -f nirucon-suckless/issue /etc/
 
     # Clone and install Nirucon DWM Bar
     echo "Installing Nirucon DWM Bar..."
     git clone https://github.com/nirucon/nirubar-dwm-void
     mkdir -p ~/.config/suckless/nirubar-dwm-void
+    rm -rf ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void
     mv nirubar-dwm-void/nirubar-dwm-void ~/.config/suckless/nirubar-dwm-void/
     chmod +x ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void
 
@@ -101,6 +103,7 @@ install_havamal() {
     echo "Installing Havamal script..."
     git clone https://github.com/nirucon/havamal
     mkdir -p ~/.config/havamal
+    rm -rf ~/.config/havamal/havamal
     mv havamal/havamal ~/.config/havamal/
     chmod +x ~/.config/havamal/havamal
 }
@@ -109,7 +112,7 @@ install_havamal() {
 install_srplay_dmenu() {
     echo "Installing SRPlay Dmenu script..."
     git clone https://github.com/nirucon/srplay-dmenu
-    sudo mv srplay-dmenu/srplay-dmenu /usr/local/bin/
+    sudo mv -f srplay-dmenu/srplay-dmenu /usr/local/bin/
     sudo chmod +x /usr/local/bin/srplay-dmenu
 }
 
@@ -136,90 +139,42 @@ install_dunst_config() {
     echo "Installing Nirucon Dunst Configuration..."
     git clone https://github.com/nirucon/dunstrc
     mkdir -p ~/.config/dunst
+    rm -rf ~/.config/dunst/dunstrc
     mv dunstrc/dunstrc ~/.config/dunst/
 }
 
 # Function: Install additional packages
 install_additional_packages() {
     echo "Installing additional packages..."
-    sudo xbps-install -S fastfetch playerctl pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano xarchiver xclip htop curl libnotify jq bc rofi --yes
+    sudo xbps-install -S fastfetch playerctl pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano xarchiver xclip htop curl libnotify jq bc rofi lxappearance --yes
 }
 
 # Function: Install Web Browsers
 install_web_browsers() {
-    read -p "Do you want to install web browsers (Brave, Firefox, Surf)? [Y/n]: " browser_response
+    read -p "Do you want to install web browsers (Firefox, Surf)? [Y/n]: " browser_response
     browser_response=${browser_response,,}
     if [[ "$browser_response" =~ ^(yes|y| ) ]] || [[ -z "$browser_response" ]]; then
-        sudo xbps-install -S firefox surf brave-browser --yes
+        sudo xbps-install -S firefox surf --yes
     fi
 }
 
-# Function: Install GTK theme, icons, and Rofi theme
-install_themes_icons() {
-    read -p "Do you want to install the GTK theme, icons, and Rofi custom theme? [Y/n]: " theme_response
-    theme_response=${theme_response,,}
-    if [[ "$theme_response" =~ ^(yes|y| ) ]] || [[ -z "$theme_response" ]]; then
-        echo "Installing Graphite GTK theme (Dark)..."
-        git clone https://github.com/vinceliuice/Graphite-gtk-theme
-        cd Graphite-gtk-theme
-        sudo ./install.sh -d /usr/share/themes -c dark
-        cd ..
-        rm -rf Graphite-gtk-theme
+# Function: Install Rofi theme
+install_rofi_theme() {
+    echo "Installing and setting the Rofi custom theme..."
+    sudo mkdir -p /usr/share/rofi/themes
+    mkdir -p ~/.config/rofi
 
-        echo "Installing Tela Circle icon theme (Black)..."
-        git clone https://github.com/vinceliuice/Tela-circle-icon-theme
-        cd Tela-circle-icon-theme
-        sudo ./install.sh -a
-        cd ..
-        rm -rf Tela-circle-icon-theme
+    wget -O /tmp/nirucon.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/nirucon.rasi
+    sudo mv -f /tmp/nirucon.rasi /usr/share/rofi/themes/
 
-        # Configure themes and icons
-        echo "Configuring themes and icons..."
-        mkdir -p ~/.config/gtk-3.0/
-        mkdir -p ~/.config/gtk-4.0/
-
-        echo 'gtk-theme-name="Graphite-Dark"' > ~/.gtkrc-2.0
-        echo 'gtk-icon-theme-name="Tela-circle-black"' >> ~/.gtkrc-2.0
-
-        cat <<EOF > ~/.config/gtk-3.0/settings.ini
-[Settings]
-gtk-theme-name=Graphite-Dark
-gtk-icon-theme-name=Tela-circle-black
-EOF
-
-        cat <<EOF > ~/.config/gtk-4.0/settings.ini
-[Settings]
-gtk-theme-name=Graphite-Dark
-gtk-icon-theme-name=Tela-circle-black
-EOF
-
-        if ! grep -q 'export GTK_THEME="Graphite-Dark"' ~/.xinitrc; then
-            sed -i '/# Set default GTK and Icon themes/a \
-export GTK_THEME="Graphite-Dark" \
-export GTK_ICON_THEME="Tela-circle-black" \
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0" \
-export GTK3_SETTINGS="$HOME/.config/gtk-3.0/settings.ini" \
-export GTK4_SETTINGS="$HOME/.config/gtk-4.0/settings.ini"' ~/.xinitrc
-        fi
-
-        echo "Theme set to Graphite-Dark and icon theme set to Tela-circle-black."
-
-        echo "Installing and setting the Rofi custom theme..."
-        sudo mkdir -p /usr/share/rofi/themes
-        mkdir -p ~/.config/rofi
-
-        wget -O /tmp/nirucon.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/nirucon.rasi
-        sudo mv -f /tmp/nirucon.rasi /usr/share/rofi/themes/
-
-        wget -O /tmp/config.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/config.rasi
-        mv -f /tmp/config.rasi ~/.config/rofi/config.rasi
-    fi
+    wget -O /tmp/config.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/config.rasi
+    mv -f /tmp/config.rasi ~/.config/rofi/config.rasi
 }
 
 # Function: Clean up
 clean_up() {
     echo "Cleaning up..."
-    rm -rf nirucon-suckless nirubar-dwm-void havamal srplay-dmenu ~/Git/nirucon-death-grubtheme dunstrc Graphite-gtk-theme Tela-circle-icon-theme
+    rm -rf nirucon-suckless nirubar-dwm-void havamal srplay-dmenu ~/Git/nirucon-death-grubtheme dunstrc
 }
 
 # Function: Reboot the system
@@ -249,6 +204,6 @@ install_grub_theme
 install_dunst_config
 install_additional_packages
 install_web_browsers
-install_themes_icons
+install_rofi_theme
 clean_up
 reboot_system
