@@ -92,7 +92,7 @@ install_havamal() {
     echo "Installing Havamal script..."
     git clone https://github.com/nirucon/havamal
     mkdir -p ~/.config/havamal
-    mv havamal/havamal ~/.config/havamal/
+    mv havamal/* ~/.config/havamal/
     chmod +x ~/.config/havamal/havamal
 }
 
