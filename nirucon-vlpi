@@ -58,6 +58,35 @@ install_packages() {
     sudo xbps-install -S "${packages[@]}"
 }
 
+# Function: Install fonts
+install_fonts() {
+    # Directory to store fonts
+    FONT_DIR="$HOME/.local/share/fonts"
+
+    # Create font directory if it does not exist
+    mkdir -p "$FONT_DIR"
+
+    # Download and install Font Awesome
+    FA_VERSION="6.0.0-beta3"
+    FA_URL="https://github.com/FortAwesome/Font-Awesome/releases/download/$FA_VERSION/fontawesome-free-$FA_VERSION-desktop.zip"
+    curl -L "$FA_URL" -o /tmp/fontawesome.zip
+    unzip /tmp/fontawesome.zip -d /tmp/fontawesome
+    mv /tmp/fontawesome/fontawesome-free-$FA_VERSION-desktop/otfs/*.otf "$FONT_DIR"
+    rm -rf /tmp/fontawesome /tmp/fontawesome.zip
+
+    # Download and install Mononoki Nerd Font
+    MONONOKI_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip"
+    curl -L "$MONONOKI_URL" -o /tmp/mononoki.zip
+    unzip /tmp/mononoki.zip -d /tmp/mononoki
+    mv /tmp/mononoki/*.ttf "$FONT_DIR"
+    rm -rf /tmp/mononoki /tmp/mononoki.zip
+
+    # Refresh font cache
+    fc-cache -f -v
+
+    echo "Fonts installed successfully."
+}
+
 # Function: Install optional packages based on user choice
 install_optional() {
     local prompt="$1"
@@ -307,6 +336,7 @@ main() {
     sudo xbps-install -S base-devel
 
     install_packages
+    install_fonts
 
     local browser_packages=("firefox")
     install_optional "Do you want to install Firefox?" browser_packages[@]
