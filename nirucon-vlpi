@@ -87,6 +87,34 @@ install_fonts() {
     echo "Fonts installed successfully."
 }
 
+# Function: Install pipewire
+install_pipewire() {
+    # Install PipeWire and necessary tools
+    sudo xbps-install -y pipewire pipewire-alsa pipewire-pulse pipewire-jack pipewire-media-session wireplumber
+
+    # Enable PipeWire services
+    sudo ln -s /etc/sv/pipewire /var/service/
+    sudo ln -s /etc/sv/pipewire-pulse /var/service/
+    sudo ln -s /etc/sv/wireplumber /var/service/
+
+    # Optionally, disable PulseAudio if it's installed
+    if sudo xbps-query -R pulseaudio; then
+        sudo xbps-remove -y pulseaudio
+    fi
+
+    # Create PipeWire configuration directory if it doesn't exist
+    mkdir -p ~/.config/pipewire
+
+    # Copy default configuration files to user directory
+    cp /etc/pipewire/pipewire.conf ~/.config/pipewire/pipewire.conf
+    cp /etc/pipewire/media-session.d/media-session.conf ~/.config/pipewire/media-session.conf
+
+    echo "PipeWire and related tools have been installed and enabled. Reboot your system to apply the changes."
+
+    # Reboot the system
+    sudo reboot
+}
+
 # Function: Install optional packages based on user choice
 install_optional() {
     local prompt="$1"
@@ -337,6 +365,7 @@ main() {
 
     install_packages
     install_fonts
+    install_pipewire
 
     local browser_packages=("firefox")
     install_optional "Do you want to install Firefox?" browser_packages[@]
