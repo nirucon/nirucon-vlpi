@@ -60,6 +60,8 @@ setup_suckless_tools() {
     
     # Clone the repository
     if git clone https://github.com/nirucon/nirucon-suckless; then
+        echo "Repository cloned successfully."
+        
         mkdir -p ~/.config/suckless
         rm -rf ~/.config/suckless/dwm ~/.config/suckless/st ~/.config/suckless/dmenu ~/.config/suckless/slock
         
@@ -86,11 +88,40 @@ setup_suckless_tools() {
         # Move configuration files if they exist
         echo "Moving configuration files..."
         mkdir -p ~/.dwm
-        [ -f "nirucon-suckless/autostart.sh" ] && mv -f nirucon-suckless/autostart.sh ~/.dwm
-        [ -f "nirucon-suckless/.xinitrc" ] && cp -f nirucon-suckless/.xinitrc ~/
-        [ -f "nirucon-suckless/.bashrc" ] && cp -f nirucon-suckless/.bashrc ~/
-        [ -f "nirucon-suckless/.bash-aliases-void" ] && cp -f nirucon-suckless/.bash-aliases-void ~/
-        [ -f "nirucon-suckless/issue" ] && sudo cp -f nirucon-suckless/issue /etc/
+        if [ -f "nirucon-suckless/autostart.sh" ]; then
+            mv -f nirucon-suckless/autostart.sh ~/.dwm
+        else
+            echo "autostart.sh not found."
+        fi
+        
+        if [ -f "nirucon-suckless/.xinitrc" ]; then
+            cp -f nirucon-suckless/.xinitrc ~/
+            echo ".xinitrc copied to home directory."
+        else
+            echo ".xinitrc not found in the cloned repository."
+        fi
+        
+        if [ -f "nirucon-suckless/.bashrc" ]; then
+            cp -f nirucon-suckless/.bashrc ~/
+        else
+            echo ".bashrc not found."
+        fi
+        
+        if [ -f "nirucon-suckless/.bash-aliases-void" ]; then
+            cp -f nirucon-suckless/.bash-aliases-void ~/
+        else
+            echo ".bash-aliases-void not found."
+        fi
+        
+        if [ -f "nirucon-suckless/issue" ]; then
+            sudo cp -f nirucon-suckless/issue /etc/
+        else
+            echo "issue not found."
+        fi
+
+        # Clean up cloned repository
+        echo "Cleaning up cloned repository..."
+        rm -rf nirucon-suckless
 
         # Insert Nirucon DWM Bar in .xinitrc
         echo "Configuring Nirucon DWM Bar in .xinitrc..."
