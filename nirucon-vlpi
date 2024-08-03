@@ -69,7 +69,7 @@ install_core_suckless() {
 
     # Update package list and install core dependencies
     sudo xbps-install -Syu
-    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel freetype-devel fontconfig-devel xorg-minimal xorg-fonts xrdb
+    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xorg-fonts xrdb
     echo -e "\e[32mCore dependencies for suckless and minimal Xorg setup installed successfully!\e[0m"
 }
 
