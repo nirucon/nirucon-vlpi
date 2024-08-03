@@ -39,7 +39,7 @@ add_repos() {
 # Function: Install core packages
 install_core_packages() {
     echo "Installing core packages..."
-    sudo xbps-install -S base-devel libX11-devel libXft-devel libXinerama-devel \
+    sudo xbps-install -S wget base-devel libX11-devel libXft-devel libXinerama-devel \
     freetype-devel fontconfig-devel imlib2 xorg-minimal xorg-video-drivers \
     xorg-input-drivers xorg-server xorg-apps pipewire pipewire-devel \
     alsa-pipewire wireplumber pipewire-pulse alsa-utils acpi acpid tlp \
