@@ -12,7 +12,7 @@ check_internet_connection() {
         echo -e "\e[32mInternet connection: OK\e[0m"
     else
         echo -e "\e[31mInternet connection: DOWN\e[0m"
-        echo "This script requires an active internet connection. Please resolve the issue and run the script again."
+        echo -e "\e[31mThis script requires an active internet connection. Please resolve the issue and run the script again.\e[0m"
         exit 1
     fi
 }
@@ -30,7 +30,7 @@ confirm_proceed() {
     read -p "Are you sure you want to continue with the post installation on your Void Linux? [Y/n]: " confirm_install
     confirm_install="${confirm_install,,}" # Convert to lowercase
     if [[ "$confirm_install" == "n" ]]; then
-        echo "Installation aborted."
+        echo -e "\e[31mInstallation aborted.\e[0m"
         exit 0
     fi
     echo "Proceeding with installation..."
@@ -44,7 +44,7 @@ install_repos() {
     sudo xbps-install -Syu
     sudo xbps-install -y void-repo-nonfree
 
-    echo "Nonfree repository and tools installed successfully."
+    echo -e "\e[32mNonfree repository and tools installed successfully.\e[0m"
 }
 
 # Function: Install core dependencies for suckless (dwm, st, dmenu, slock), minimal Xorg setup and essential packages
@@ -57,7 +57,7 @@ install_core_suckless() {
         libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal \
         xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
         cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl dunst \
-        pamixer spotifyd playerctl jq
+        pamixer spotifyd playerctl jq rofi
     
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
@@ -97,9 +97,9 @@ install_suckless() {
     comment_line="# Start nirubar-dwm-*"
     if [[ -f ~/.xinitrc ]]; then
         sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
-        echo "Line inserted successfully."
+        echo -e "\e[32mLine inserted successfully.\e[0m"
     else
-        echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+        echo -e "\e[31m~/.xinitrc not found. Please ensure you have the file in your home directory.\e[0m"
     fi
 
     # srplay-dmenu - dmenu script for SR play podcasts and radio
@@ -121,9 +121,9 @@ install_suckless() {
     cp -fr ~/Git/havamal/* ~/.config/havamal/
     chmod +x ~/.config/havamal/havamal
     rm -rf ~/Git/havamal
-    echo "The 'havamal' script has been installed and the repository has been removed."
+    echo -e "\e[32mThe 'havamal' script has been installed and the repository has been removed.\e[0m"
 
-    echo "nirucon-suckless, configurations and scripts installed successfully."
+    echo -e "\e[32mNirucon-suckless, configurations and scripts installed successfully.\e[0m"
 }
 
 # Function: Check if a package is installed
@@ -164,7 +164,7 @@ install_optional_packages() {
     done
 
     if [[ ${#selected_packages[@]} -eq 0 ]]; then
-        echo "No optional packages selected for installation."
+        echo -e "\e[31mNo optional packages selected for installation.\e[0m"
         return
     fi
 
@@ -178,18 +178,44 @@ install_optional_packages() {
         final_choice="${final_choice,,}" # Convert to lowercase
         if [[ "$final_choice" =~ ^(yes|y| ) ]] || [[ -z "$final_choice" ]]; then
             sudo xbps-install -y "${selected_packages[@]}"
-            echo "Selected packages installed."
+            echo -e "\e[32mSelected packages installed.\e[0m"
             break
         elif [[ "$final_choice" == "no" || "$final_choice" == "n" ]]; then
-            echo "Installation of optional packages aborted."
+            echo -e "\e[31mInstallation of optional packages aborted.\e[0m"
             break
         elif [[ "$final_choice" == "choose" || "$final_choice" == "c" ]]; then
             install_optional_packages
             break
         else
-            echo "Invalid choice. Please select [Y]yes / [n]no / [c]choose again."
+            echo -e "\e[31mInvalid choice. Please select [Y]yes / [n]no / [c]choose again.\e[0m"
         fi
     done
+}
+
+# Function: Install and set the Rofi custom theme
+install_rofi_theme() {
+    echo "Installing and setting the Rofi custom theme..."
+    
+    sudo mkdir -p /usr/share/rofi/themes
+    mkdir -p ~/.config/rofi
+
+    wget -O /tmp/nirucon.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/nirucon.rasi
+    if [ $? -eq 0 ]; then
+        sudo mv -f /tmp/nirucon.rasi /usr/share/rofi/themes/
+    else
+        echo -e "\e[31mFailed to download Rofi theme. Please check the URL or your internet connection.\e[0m"
+        exit 1
+    fi
+
+    wget -O /tmp/config.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/config.rasi
+    if [ $? -eq 0 ]; then
+        mv -f /tmp/config.rasi ~/.config/rofi/config.rasi
+    else
+        echo -e "\e[31mFailed to download default Rofi configuration. Please check the URL or your internet connection.\e[0m"
+        exit 1
+    fi
+
+    echo -e "\e[32mRofi theme and configuration installed successfully.\e[0m"
 }
 
 # Function: Prompt for reboot
@@ -210,6 +236,7 @@ main() {
     install_core_suckless
     install_suckless
     install_optional_packages
+    install_rofi_theme
     prompt_reboot
 }
 
