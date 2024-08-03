@@ -64,19 +64,20 @@ install_core_suckless() {
 
 # Function: Check and install fonts
 install_fonts() {
-    local fonts=("font-awesome" "mononoki-nerd-font")
+    local fonts=("FontAwesome" "mononoki")
+    local font_dirs=("font-awesome" "mononoki-nerd-font")
     local font_urls=("https://github.com/FortAwesome/Font-Awesome.git" "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip")
 
     sudo mkdir -p /usr/share/fonts
 
     for i in "${!fonts[@]}"; do
-        if ! fc-list | grep -iq "${fonts[$i]}"; then
-            echo "Installing ${fonts[$i]}..."
-            if [[ "${fonts[$i]}" == "font-awesome" ]]; then
+        if ! ls /usr/share/fonts/ | grep -iq "${fonts[$i]}"; then
+            echo "Installing ${font_dirs[$i]}..."
+            if [[ "${font_dirs[$i]}" == "font-awesome" ]]; then
                 sudo git clone --depth 1 "${font_urls[$i]}" /tmp/font-awesome
                 sudo cp -r /tmp/font-awesome/webfonts/* /usr/share/fonts/
                 sudo rm -rf /tmp/font-awesome
-            elif [[ "${fonts[$i]}" == "mononoki-nerd-font" ]]; then
+            elif [[ "${font_dirs[$i]}" == "mononoki-nerd-font" ]]; then
                 sudo mkdir -p /tmp/mononoki-nerd-font
                 sudo wget -O /tmp/mononoki-nerd-font.zip "${font_urls[$i]}"
                 sudo unzip /tmp/mononoki-nerd-font.zip -d /tmp/mononoki-nerd-font
@@ -85,7 +86,7 @@ install_fonts() {
             fi
             sudo fc-cache -f -v
         else
-            echo "${fonts[$i]} is already installed."
+            echo "${font_dirs[$i]} is already installed."
         fi
     done
 }
