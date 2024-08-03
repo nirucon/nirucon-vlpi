@@ -53,18 +53,6 @@ install_repos() {
     sudo xbps-install -Syu
     sudo xbps-install -y void-repo-nonfree
 
-    # Check if the void-packages repository is already cloned
-    if [ ! -d "$HOME/void-packages" ]; then
-        # Clone the xbps-src repository
-        git clone https://github.com/void-linux/void-packages.git ~/void-packages
-
-        # Set up the build environment
-        cd ~/void-packages
-        ./xbps-src binary-bootstrap
-    else
-        echo "xbps-src repository already cloned."
-    fi
-
     echo "Nonfree repository and tools installed successfully."
 
     # Uncomment the following lines to add more usable Void Linux repositories
@@ -91,8 +79,8 @@ install_core_suckless() {
     # Update package list and install core dependencies
     sudo xbps-install -Syu
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
-                         freetype-devel fontconfig-devel xorg-server xorg-xinit \
-                         xorg-xsetroot xorg-fonts xorg-apps wget
+                         freetype-devel fontconfig-devel xorg-server xinit \
+                         xsetroot xorg-fonts-type1 xorg-fonts-misc wget
 
     echo -e "\e[32mCore dependencies for suckless and minimal Xorg setup installed successfully!\e[0m"
 }
