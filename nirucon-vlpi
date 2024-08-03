@@ -218,6 +218,32 @@ install_rofi_theme() {
     echo -e "\e[32mRofi theme and configuration installed successfully.\e[0m"
 }
 
+# Function: Clone and install cmus themes
+install_cmus_theme() {
+    echo "Cloning and installing nirucon cmus themes..."
+    
+    # Create necessary directory
+    mkdir -p ~/.config/cmus
+
+    # Clone the repository
+    git clone https://github.com/nirucon/nirucon-cmus-themes /tmp/nirucon-cmus-themes
+    
+    # Check if cloning was successful
+    if [ $? -eq 0 ]; then
+        # Copy theme files and rc file to ~/.config/cmus
+        cp /tmp/nirucon-cmus-themes/*.theme ~/.config/cmus/
+        cp /tmp/nirucon-cmus-themes/rc ~/.config/cmus/
+
+        # Remove the temporary cloned repository
+        rm -rf /tmp/nirucon-cmus-themes
+
+        echo -e "\e[32mCMUS themes and configuration installed successfully.\e[0m"
+    else
+        echo -e "\e[31mFailed to clone CMUS themes repository. Please check the URL or your internet connection.\e[0m"
+        exit 1
+    fi
+}
+
 # Function: Prompt for reboot
 prompt_reboot() {
     read -p "Nirucon-VLPI is now installed. Start with: startx, but it's highly recommended to reboot. Do you want to reboot now? [Y/n]: " reboot_choice
@@ -237,6 +263,7 @@ main() {
     install_suckless
     install_optional_packages
     install_rofi_theme
+    install_cmus_theme
     prompt_reboot
 }
 
