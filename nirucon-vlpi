@@ -45,11 +45,37 @@ prompt_reboot() {
     fi
 }
 
+# Function: Install additional repositories and tools
+install_repos() {
+    echo "Adding additional repositories and installing necessary tools..."
+    sudo xbps-install -Syu
+    sudo xbps-install -y git base-devel
+
+    # Clone the xbps-src repository
+    git clone https://github.com/void-linux/void-packages.git ~/void-packages
+
+    # Set up the build environment
+    cd ~/void-packages
+    ./xbps-src binary-bootstrap
+
+    # Add community repositories
+    sudo tee /etc/xbps.d/99-repository.conf <<EOF
+repository=https://alpha.de.repo.voidlinux.org/current
+repository=https://alpha.de.repo.voidlinux.org/current/multilib
+repository=https://alpha.de.repo.voidlinux.org/current/multilib/nonfree
+repository=https://alpha.de.repo.voidlinux.org/current/nonfree
+repository=https://alpha.de.repo.voidlinux.org/current/debug
+EOF
+
+    echo -e "\e[32mRepositories and tools installed successfully!\e[0m"
+}
+
 # Main function
 main() {
     display_welcome
     check_internet_connection
     confirm_proceed
+    install_repos
     # Add additional functions here as needed
     prompt_reboot
 }
