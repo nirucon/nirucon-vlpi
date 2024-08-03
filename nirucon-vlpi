@@ -45,35 +45,19 @@ install_repos() {
     sudo xbps-install -y void-repo-nonfree
 
     echo "Nonfree repository and tools installed successfully."
-
-    # Uncomment the following lines to add more usable Void Linux repositories
-    # add_more_repos
 }
 
-# Sub-function to add more repositories
-# add_more_repos() {
-#     echo "Adding additional repositories..."
-#     sudo tee /etc/xbps.d/10-repository.conf <<EOF
-# repository=https://repo-us.voidlinux.org/current
-# repository=https://repo-us.voidlinux.org/current/multilib
-# repository=https://repo-us.voidlinux.org/current/multilib/nonfree
-# repository=https://repo-us.voidlinux.org/current/nonfree
-# repository=https://repo-us.voidlinux.org/current/debug
-# EOF
-#     echo "Additional repositories added successfully."
-# }
-
-# Function: Install core dependencies for suckless (dwm, st, dmenu, slock), minimal Xorg setup and essiential packages
+# Function: Install core dependencies for suckless (dwm, st, dmenu, slock), minimal Xorg setup and essential packages
 install_core_suckless() {
     echo "Installing core dependencies for suckless, minimal Xorg setup and some essential packages..."
 
     # Update package list and install core dependencies
     sudo xbps-install -Syu
-    # core
-    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xorg-fonts xsetroot setxkbmap xrdb
-    # essential
-    sudo xbps-install -y nano unzip wget nitrogen picom
-    echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup and some essential package installed!\e[0m"
+    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
+        libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal \
+        xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom
+    
+    echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
 
 # Function: Prompt for reboot
@@ -92,7 +76,6 @@ main() {
     confirm_proceed
     install_repos
     install_core_suckless
-    # Add additional functions here as needed
     prompt_reboot
 }
 
