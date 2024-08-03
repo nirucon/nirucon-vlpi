@@ -1,301 +1,254 @@
 #!/bin/bash
 
-# Void Linux Post Install script by Nicklas Rudolfsson
-# https://github.com/nirucon
-# The script is made for my own needs but is free to use and modify
-# Focus of the script: suckless dwm setup, dmenu scripts, noir theming, music and content creation applications + some extra stuff
+# Nirucon-VLPI: Post Install Script for Void Linux (glibc)
+# Author: Nicklas Rudolfsson https://github.com/nirucon n@rudolfsson.net
+# Version: 2024-08-03
+# License: Feel free to use and modify, donate if you want :) https://www.paypal.com/paypalme/nicklasrudolfsson
+# Disclaimer: I do not have any responsibility at all for this script and changes on your system!
+
+# Welcome message
+clear
+echo -e "\e[1;34mWelcome to the Nirucon-VLPI Post Install Script for Void Linux (glibc)\e[0m"
+echo -e "\e[1;31mDisclaimer: Use at your own risk. The author assumes no responsibility for any changes made to your system.\e[0m"
+echo "--------------------------------------------------------------------------"
 
 # Function: Check for internet connection
-check_internet_connection() {
+check_internet() {
+    echo "Checking for internet connection..."
     if ping -q -c 1 -W 1 google.com >/dev/null; then
-        echo -e "\e[32mInternet connection: OK\e[0m"
+        echo "Internet connection is available."
     else
-        echo -e "\e[31mInternet connection: DOWN\e[0m"
-        echo "This script requires an active internet connection. Please resolve the issue and run the script again."
+        echo "No internet connection. Exiting script."
         exit 1
     fi
 }
 
-# Function: Display welcome message
-display_welcome() {
-    cat <<EOF
-Welcome to NIRUCON-VLPI - Nicklas Rudolfsson's post-install script of 'My Suckless Setup' for Void Linux.
-This is tailored for MY own needs (focus on noir theming and music and media production). Feel free to use and modify, but I disclaim all responsibility; proceed at your own risk!
-Contact: n@rudolfsson.net
-Script version: 2024-08-02.01
-
-EOF
+# Function: Update and optimize the system
+update_system() {
+    echo "Updating and optimizing the system..."
+    sudo xbps-install -Syu xbps --yes
+    sudo xbps-install -Syu --yes
 }
 
-# Function: Prompt confirmation to proceed
-confirm_proceed() {
-    read -p "Are you sure you want to continue with the installation? [Y/n]: " confirm_install
-    if [[ "$confirm_install" != [Nn]* ]]; then
-        echo "Proceeding with installation..."
+# Function: Add additional repositories
+add_repos() {
+    echo "Adding additional repositories..."
+    sudo xbps-install -S void-repo-nonfree void-repo-multilib void-repo-multilib-nonfree --yes
+}
+
+# Function: Install core packages
+install_core_packages() {
+    echo "Installing core packages..."
+    sudo xbps-install -S xorg-minimal xorg-video-drivers xorg-input-drivers xorg-server xorg-apps --yes
+    sudo xbps-install -S alsa-utils pulseaudio pavucontrol pipewire pipewire-alsa pipewire-pulse pipewire-jack --yes
+    sudo xbps-install -S dwm dmenu st slock arandr suckless-tools --yes
+    sudo xbps-install -S acpi acpid tlp powertop --yes
+    sudo xbps-install -S NetworkManager network-manager-applet --yes
+    sudo xbps-install -S font-awesome-ttf nerd-fonts-mononoki --yes
+}
+
+# Function: Enable necessary services
+enable_services() {
+    echo "Enabling necessary services..."
+    sudo ln -s /etc/sv/NetworkManager /var/service
+    sudo ln -s /etc/sv/acpid /var/service
+}
+
+# Function: Setup suckless tools
+setup_suckless_tools() {
+    echo "Setting up suckless tools..."
+    git clone https://github.com/nirucon/nirucon-suckless
+    mkdir -p ~/.config/suckless
+    mv nirucon-suckless/dwm ~/.config/suckless/
+    mv nirucon-suckless/st ~/.config/suckless/
+    mv nirucon-suckless/dmenu ~/.config/suckless/
+    mv nirucon-suckless/slock ~/.config/suckless/
+    cd ~/.config/suckless/dwm && sudo make install
+    cd ~/.config/suckless/st && sudo make install
+    cd ~/.config/suckless/dmenu && sudo make install
+    cd ~/.config/suckless/slock && sudo make install
+
+    # Move configuration files
+    echo "Moving configuration files..."
+    mkdir -p ~/.dwm
+    mv nirucon-suckless/autostart.sh ~/.dwm
+    mv nirucon-suckless/.xinitrc ~/
+    mv nirucon-suckless/.bashrc ~/
+    mv nirucon-suckless/.bash-aliases-void ~/
+    sudo mv nirucon-suckless/issue /etc/
+
+    # Clone and install Nirucon DWM Bar
+    echo "Installing Nirucon DWM Bar..."
+    git clone https://github.com/nirucon/nirubar-dwm-void
+    mkdir -p ~/.config/suckless/nirubar-dwm-void
+    mv nirubar-dwm-void/nirubar-dwm-void ~/.config/suckless/nirubar-dwm-void/
+    chmod +x ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void
+
+    # Insert Nirucon DWM Bar in .xinitrc
+    echo "Configuring Nirucon DWM Bar in .xinitrc..."
+    line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
+    comment_line="# Start nirubar-dwm-*"
+    if [[ -f ~/.xinitrc ]]; then
+        sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
+        echo "Line inserted successfully."
     else
-        echo "Installation aborted."
+        echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
+    fi
+}
+
+# Function: Install Havamal script
+install_havamal() {
+    echo "Installing Havamal script..."
+    git clone https://github.com/nirucon/havamal
+    mkdir -p ~/.config/havamal
+    mv havamal/havamal ~/.config/havamal/
+    chmod +x ~/.config/havamal/havamal
+}
+
+# Function: Install SRPlay Dmenu script
+install_srplay_dmenu() {
+    echo "Installing SRPlay Dmenu script..."
+    git clone https://github.com/nirucon/srplay-dmenu
+    sudo mv srplay-dmenu/srplay-dmenu /usr/local/bin/
+    sudo chmod +x /usr/local/bin/srplay-dmenu
+}
+
+# Function: Install Nirucon Grub Theme
+install_grub_theme() {
+    read -p "Do you want to install a custom grub theme - nirucon-death? [Y/n]: " grub_response
+    grub_response=${grub_response,,}
+
+    if [[ "$grub_response" =~ ^(yes|y| ) ]] || [[ -z "$grub_response" ]]; then
+        echo "Installing custom grub theme..."
+        git clone https://github.com/nirucon/nirucon-death-grubtheme ~/Git/nirucon-death-grubtheme
+        sudo mkdir -p /boot/grub/themes
+        sudo cp -r ~/Git/nirucon-death-grubtheme/nirucon-death /boot/grub/themes/nirucon-death
+        sudo sed -i 's|^#GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/nirucon-death/theme.txt"|' /etc/default/grub
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+        echo "Custom grub theme installed."
+    else
+        echo "Skipping custom grub theme installation."
+    fi
+}
+
+# Function: Install Nirucon Dunst Configuration
+install_dunst_config() {
+    echo "Installing Nirucon Dunst Configuration..."
+    git clone https://github.com/nirucon/dunstrc
+    mkdir -p ~/.config/dunst
+    mv dunstrc/dunstrc ~/.config/dunst/
+}
+
+# Function: Install additional packages
+install_additional_packages() {
+    echo "Installing additional packages..."
+    sudo xbps-install -S fastfetch playerctl pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano xarchiver xclip htop curl libnotify jq bc rofi --yes
+}
+
+# Function: Install Web Browsers
+install_web_browsers() {
+    read -p "Do you want to install web browsers (Brave, Firefox, Surf)? [Y/n]: " browser_response
+    browser_response=${browser_response,,}
+    if [[ "$browser_response" =~ ^(yes|y| ) ]] || [[ -z "$browser_response" ]]; then
+        sudo xbps-install -S firefox surf brave-browser --yes
+    fi
+}
+
+# Function: Install GTK theme, icons, and Rofi theme
+install_themes_icons() {
+    read -p "Do you want to install the GTK theme, icons, and Rofi custom theme? [Y/n]: " theme_response
+    theme_response=${theme_response,,}
+    if [[ "$theme_response" =~ ^(yes|y| ) ]] || [[ -z "$theme_response" ]]; then
+        echo "Installing Graphite GTK theme (Dark)..."
+        git clone https://github.com/vinceliuice/Graphite-gtk-theme
+        cd Graphite-gtk-theme
+        sudo ./install.sh -d /usr/share/themes -c dark
+        cd ..
+        rm -rf Graphite-gtk-theme
+
+        echo "Installing Tela Circle icon theme (Black)..."
+        git clone https://github.com/vinceliuice/Tela-circle-icon-theme
+        cd Tela-circle-icon-theme
+        sudo ./install.sh -a
+        cd ..
+        rm -rf Tela-circle-icon-theme
+
+        # Configure themes and icons
+        echo "Configuring themes and icons..."
+        mkdir -p ~/.config/gtk-3.0/
+        mkdir -p ~/.config/gtk-4.0/
+
+        echo 'gtk-theme-name="Graphite-Dark"' > ~/.gtkrc-2.0
+        echo 'gtk-icon-theme-name="Tela-circle-black"' >> ~/.gtkrc-2.0
+
+        cat <<EOF > ~/.config/gtk-3.0/settings.ini
+[Settings]
+gtk-theme-name=Graphite-Dark
+gtk-icon-theme-name=Tela-circle-black
+EOF
+
+        cat <<EOF > ~/.config/gtk-4.0/settings.ini
+[Settings]
+gtk-theme-name=Graphite-Dark
+gtk-icon-theme-name=Tela-circle-black
+EOF
+
+        if ! grep -q 'export GTK_THEME="Graphite-Dark"' ~/.xinitrc; then
+            sed -i '/# Set default GTK and Icon themes/a \
+export GTK_THEME="Graphite-Dark" \
+export GTK_ICON_THEME="Tela-circle-black" \
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0" \
+export GTK3_SETTINGS="$HOME/.config/gtk-3.0/settings.ini" \
+export GTK4_SETTINGS="$HOME/.config/gtk-4.0/settings.ini"' ~/.xinitrc
+        fi
+
+        echo "Theme set to Graphite-Dark and icon theme set to Tela-circle-black."
+
+        echo "Installing and setting the Rofi custom theme..."
+        sudo mkdir -p /usr/share/rofi/themes
+        mkdir -p ~/.config/rofi
+
+        wget -O /tmp/nirucon.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/nirucon.rasi
+        sudo mv -f /tmp/nirucon.rasi /usr/share/rofi/themes/
+
+        wget -O /tmp/config.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/config.rasi
+        mv -f /tmp/config.rasi ~/.config/rofi/config.rasi
+    fi
+}
+
+# Function: Clean up
+clean_up() {
+    echo "Cleaning up..."
+    rm -rf nirucon-suckless nirubar-dwm-void havamal srplay-dmenu ~/Git/nirucon-death-grubtheme dunstrc Graphite-gtk-theme Tela-circle-icon-theme
+}
+
+# Function: Reboot the system
+reboot_system() {
+    echo -e "\e[1;32mInstallation completed successfully!\e[0m"
+    read -p "Do you want to reboot now? [Y/n]: " reboot_response
+    reboot_response=${reboot_response,,}
+    if [[ "$reboot_response" =~ ^(yes|y| ) ]] || [[ -z "$reboot_response" ]]; then
+        echo "Rebooting now..."
+        sudo reboot
+    else
+        echo "Warning: The system needs to be rebooted to work properly."
         exit 0
     fi
 }
 
-# Function: Install necessary packages if not already installed
-install_if_needed() {
-    if ! command -v "$1" &>/dev/null; then
-        echo "Installing $1..."
-        sudo xbps-install -S "$1"
-    else
-        echo "$1 is already installed"
-    fi
-}
-
-# Function: Optimize system settings
-optimize_system_conf() {
-    sudo xbps-install -Sy void-repo-nonfree
-    sudo xbps-install -Syu
-}
-
-# Function: Install essential packages via xbps
-install_packages() {
-    local packages=(
-        base-devel xorg xinit noto-fonts-ttf noto-fonts-emoji playerctl
-        qt6ct breeze-icons pcmanfm arandr nitrogen picom openssh cmus scrot gnupg
-        pass brightnessctl mpv dunst unzip nano alsa-utils pavucontrol xarchiver xclip htop curl
-        libX11-devel libXinerama-devel libXft-devel freetype-devel libXext-devel font-awesome
-    )
-
-    echo "Installing essential packages via xbps..."
-    sudo xbps-install -Sy "${packages[@]}"
-}
-
-# Function: Clone and install nirucon-suckless and related files, scripts, and dot files
-install_suckless() {
-    echo "Installing Suckless utilities and configurations..."
-    git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
-    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
-
-    declare -a repos=("nirubar-dwm-void" "dunstrc" "nirucon-dmenu" "sverigesradio-dmenu" "srpod-dmenu" "srplay-dmenu" "dwmexit-dmenu" "havamal" "wifi-dmenu" "system-optimizer-dmenu")
-    for repo in "${repos[@]}"; do
-        git clone https://github.com/nirucon/$repo ~/Git/$repo
-    done
-
-    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
-    cp -rf ~/Git/dunstrc/* ~/.config/dunst
-    cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
-
-    declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
-    for dir in "${suckless_dirs[@]}"; do
-        sudo make -C ~/.config/suckless/$dir clean install
-    done
-
-    cp -f ~/Git/nirucon-suckless/.xinitrc ~/
-    cp -f ~/Git/nirucon-suckless/autostart.sh ~/.dwm
-    cp -f ~/Git/nirucon-suckless/.bashrc ~/
-    cp -f ~/Git/nirucon-suckless/.bash_aliases_void ~/
-    cp -rf ~/Git/nirucon-suckless/nirucon-wallpapers ~/Pictures/
-    sudo cp -f ~/Git/nirucon-suckless/issue /etc/
-    chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void ~/.config/nirucon-greeter/greeter
-
-    sed -i '/# Start nirubar-dwm-*/a ~/.config/suckless/nirubar-dwm/nirubar-dwm-void &' ~/.xinitrc
-
-    # nirucon-dmenu - dmenu scripts launcher
-    echo "Installing nirucon-dmenu script..."
-    sudo cp -f ~/Git/nirucon-dmenu/nirucon-dmenu-scripts-launcher /usr/local/bin/
-    sudo chmod +x /usr/local/bin/nirucon-dmenu-scripts-launcher
-
-    # sverigesradio-dmenu - dmenu script for sveriges radio
-    echo "Installing sverigesradio-dmenu script..."
-    sudo cp -f ~/Git/sverigesradio-dmenu/sverigesradio-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/sverigesradio-dmenu
-
-    # srpod-dmenu - dmenu script for sr play pod
-    echo "Installing srpod-dmenu script..."
-    sudo cp -f ~/Git/srpod-dmenu/srpod-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/srpod-dmenu
-
-    # srplay-dmenu - dmenu script for sr play podcasts and radio
-    echo "Installing srplay-dmenu script..."
-    sudo cp -f ~/Git/srplay-dmenu/srplay-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/srplay-dmenu
-
-    # dwmexit-dmenu - dmenu script for suspend, logout, restart, reboot
-    echo "Installing dwmexit-dmenu script..."
-    sudo cp -f ~/Git/dwmexit-dmenu/dwmexit-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/dwmexit-dmenu
-
-    # havamal - script for random quotes in .bashrc
-    echo "Installing havamal script..."
-    mkdir -p ~/.config/havamal
-    cp -fr ~/Git/havamal/* ~/.config/havamal/
-    chmod +x ~/.config/havamal/havamal
-
-    # wifi-dmenu - script for wifi in dmenu
-    echo "Installing wifi-dmenu script..."
-    sudo cp -f ~/Git/wifi-dmenu/wifi-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/wifi-dmenu
-
-    # system-optimizer-dmenu - script for optimizing system in dmenu
-    echo "Installing system-optimizer-dmenu script..."
-    sudo cp -f ~/Git/system-optimizer-dmenu/system-optimizer-dmenu /usr/local/bin/
-    sudo chmod +x /usr/local/bin/system-optimizer-dmenu
-
-    echo "Suckless utilities and configurations installed successfully."
-}
-
-# Function: Install custom GRUB theme
-install_grub_theme() {
-    echo "Installing custom grub theme..."
-    git clone https://github.com/nirucon/nirucon-death-grubtheme ~/Git/nirucon-death-grubtheme
-    sudo mkdir -p /boot/grub/themes
-    sudo cp -r ~/Git/nirucon-death-grubtheme/nirucon-death /boot/grub/themes/nirucon-death
-    sudo sed -i 's|^#GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/nirucon-death/theme.txt"|' /etc/default/grub
-    sudo update-grub
-    echo "Custom grub theme installed."
-}
-
-# Function: Install Graphite GTK Theme (Dark), Tela Circle Icons (Black) and nirucon Rofi Custom Theme
-install_themes_icons() {
-    echo "Installing Graphite GTK theme (Dark)..."
-    git clone https://github.com/vinceliuice/Graphite-gtk-theme
-    cd Graphite-gtk-theme
-    sudo ./install.sh -d /usr/share/themes -c dark
-    cd ..
-    rm -rf Graphite-gtk-theme
-
-    echo "Installing Tela Circle icon theme (Black)..."
-    git clone https://github.com/vinceliuice/Tela-circle-icon-theme
-    cd Tela-circle-icon-theme
-    sudo ./install.sh -a
-    cd ..
-    rm -rf Tela-circle-icon-theme
-
-    echo "Ensuring themes and icons are correctly set in the configuration files..."
-    mkdir -p ~/.config/gtk-3.0/ ~/.config/gtk-4.0/
-
-    cat <<EOF > ~/.gtkrc-2.0
-gtk-theme-name="Graphite-Dark"
-gtk-icon-theme-name="Tela-circle-black"
-EOF
-
-    cat <<EOF > ~/.config/gtk-3.0/settings.ini
-[Settings]
-gtk-theme-name=Graphite-Dark
-gtk-icon-theme-name=Tela-circle-black
-EOF
-
-    cat <<EOF > ~/.config/gtk-4.0/settings.ini
-[Settings]
-gtk-theme-name=Graphite-Dark
-gtk-icon-theme-name=Tela-circle-black
-EOF
-
-    sed -i '/# Set default GTK and Icon themes/a export GTK_THEME="Graphite-Dark"\nexport GTK_ICON_THEME="Tela-circle-black"\nexport GTK2_RC_FILES="$HOME/.gtkrc-2.0"\nexport GTK3_SETTINGS="$HOME/.config/gtk-3.0/settings.ini"\nexport GTK4_SETTINGS="$HOME/.config/gtk-4.0/settings.ini"' ~/.xinitrc
-
-    echo "Theme set to Graphite-Dark and icon theme set to Tela-circle-black."
-
-    echo "Installing and setting the Rofi custom theme..."
-    sudo mkdir -p /usr/share/rofi/themes
-    mkdir -p ~/.config/rofi
-
-    wget -O /usr/share/rofi/themes/nirucon.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/nirucon.rasi
-    wget -O ~/.config/rofi/config.rasi https://raw.githubusercontent.com/nirucon/nirucon-rofi/master/config.rasi
-}
-
-# Function: Install Fastfetch
-install_fastfetch() {
-    if ! command -v fastfetch &>/dev/null; then
-        echo "Installing Fastfetch..."
-        sudo xbps-install -Sy cmake gcc pkg-config
-        git clone https://github.com/fastfetch-cli/fastfetch.git
-        cd fastfetch
-        mkdir -p build
-        cd build
-        cmake ..
-        cmake --build . --target fastfetch
-        sudo cmake --install . --prefix /usr/local
-        cd ../..
-        rm -rf fastfetch
-        echo "Fastfetch installed successfully!"
-    else
-        echo "Fastfetch is already installed."
-    fi
-}
-
-# Function: Install Mononoki Nerd Font
-install_mononoki() {
-    if ! fc-list | grep -i mononoki &>/dev/null; then
-        echo "Installing Mononoki Nerd Font..."
-        sudo xbps-install -Sy fontconfig
-        mkdir -p ~/.local/share/fonts
-        cd ~/.local/share/fonts
-        wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/Mononoki.zip
-        unzip Mononoki.zip
-        rm Mononoki.zip
-        fc-cache -fv
-        echo "Mononoki Nerd Font installed successfully!"
-    else
-        echo "Mononoki Nerd Font is already installed."
-    fi
-}
-
-# Function: Install pipewire
-install_pipewire() {
-    local packages=("pipewire" "libspa-bluetooth" "pipewire-pulse" "alsa-pipewire")
-    local packages_to_install=()
-
-    for pkg in "${packages[@]}"; do
-        if ! xbps-query -Rs "$pkg" &>/dev/null; then
-            packages_to_install+=("$pkg")
-        fi
-    done
-
-    if [ ${#packages_to_install[@]} -eq 0 ]; then
-        echo "Pipewire and related packages are already installed."
-    else
-        sudo xbps-install -S "${packages_to_install[@]}"
-    fi
-
-    sudo ln -s /etc/sv/pipewire /var/service/ 2>/dev/null
-    sudo ln -s /etc/sv/pipewire-pulse /var/service/ 2>/dev/null
-
-    sudo usermod -aG _pipewire,pulse,pulse-access "$USER"
-
-    mkdir -p ~/.config/pipewire
-    cp /usr/share/pipewire/pipewire.conf ~/.config/pipewire/pipewire.conf
-    cp /usr/share/pipewire/pipewire-pulse.conf ~/.config/pipewire/pipewire-pulse.conf
-
-    echo "Pipewire installed ---> Log out and log back in for pipewire installation to take effect! <---"
-    echo "After logging back in, you can check the status of Pipewire using the following command:"
-    echo "pactl info"
-}
-
-# Main function to execute the script
-main() {
-    check_internet_connection
-    display_welcome
-    confirm_proceed
-
-    install_if_needed "git"
-    install_if_needed "wget"
-    sudo xbps-install -Sy base-devel
-
-    read -p "Do you want to optimize and update the system before installing additional applications? [Y/n]: " optimize_choice
-    if [[ "$optimize_choice" != [Nn]* ]]; then
-        optimize_system_conf
-    fi
-
-    install_packages
-    install_suckless
-    install_grub_theme
-    install_themes_icons
-    install_fastfetch
-    install_mononoki
-    install_pipewire
-
-    echo "Cleaning up temporary files..."
-    rm -fr ~/Git/dunstrc ~/Git/nirubar-dwm-void ~/Git/nirucon-suckless ~/Git/nirucon-death-grubtheme
-
-    echo "NIRUCON-VLPI Void Linux Post Install script completed - NOW BE CREATIVE!"
-    echo "Start nirucon-suckless with the command: startx"
-}
-
-main
+# Main script execution
+check_internet
+update_system
+add_repos
+install_core_packages
+enable_services
+setup_suckless_tools
+install_havamal
+install_srplay_dmenu
+install_grub_theme
+install_dunst_config
+install_additional_packages
+install_web_browsers
+install_themes_icons
+clean_up
+reboot_system
