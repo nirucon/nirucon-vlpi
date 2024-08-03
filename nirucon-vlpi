@@ -126,17 +126,36 @@ install_suckless() {
     echo "nirucon-suckless, configurations and scripts installed successfully."
 }
 
+# Function: Check if a optional package is installed
+is_installed() {
+    xbps-query -Rx "$1" &> /dev/null
+    return $?
+}
+
 # Function: Install optional packages
 install_optional_packages() {
-    # Add packages:
     declare -a packages=("firefox" "surf" "thunderbird" "bluefish" "filezilla")
+    declare -a not_installed_packages=()
     declare -a selected_packages=()
     declare package_choice
 
     echo "Optional Packages Installation"
-    echo "Please answer with [Y]yes / [n]no (Yes is default if pressing enter) for each package."
+    echo "Checking for already installed packages..."
 
     for package in "${packages[@]}"; do
+        if ! is_installed "$package"; then
+            not_installed_packages+=("$package")
+        fi
+    done
+
+    if [[ ${#not_installed_packages[@]} -eq 0 ]]; then
+        echo "All optional packages are already installed."
+        return
+    fi
+
+    echo "Please answer with [Y]yes / [n]no (Yes is default if pressing enter) for each package."
+
+    for package in "${not_installed_packages[@]}"; do
         read -p "Do you want to install $package? [Y/n]: " package_choice
         package_choice="${package_choice,,}" # Convert to lowercase
         if [[ "$package_choice" =~ ^(yes|y| ) ]] || [[ -z "$package_choice" ]]; then
