@@ -26,45 +26,42 @@ check_internet() {
 # Function: Update and optimize the system
 update_system() {
     echo "Updating and optimizing the system..."
-    sudo xbps-install -Syu xbps --yes
-    sudo xbps-install -Syu --yes
+    sudo xbps-install -Syu xbps
+    sudo xbps-install -Syu
 }
 
 # Function: Add additional repositories
 add_repos() {
     echo "Adding additional repositories..."
-    sudo xbps-install -S void-repo-nonfree void-repo-multilib void-repo-multilib-nonfree --yes
+    sudo xbps-install -S void-repo-nonfree void-repo-multilib void-repo-multilib-nonfree
 }
 
 # Function: Install core packages
 install_core_packages() {
     echo "Installing core packages..."
-    sudo xbps-install -S base-devel libX11-devel libXft-devel libXinerama-devel freetype-devel fontconfig-devel imlib2 --yes
-    sudo xbps-install -S xorg-minimal xorg-video-drivers xorg-input-drivers xorg-server xorg-apps --yes
-    sudo xbps-install -S pipewire pipewire-devel alsa-pipewire wireplumber pipewire-pulse alsa-utils --yes
-    sudo xbps-install -S acpi acpid tlp powertop --yes
-    sudo xbps-install -S NetworkManager network-manager-applet --yes
-    sudo xbps-install -S font-awesome nerd-fonts --yes
+    sudo xbps-install -S base-devel libX11-devel libXft-devel libXinerama-devel \
+    freetype-devel fontconfig-devel imlib2 xorg-minimal xorg-video-drivers \
+    xorg-input-drivers xorg-server xorg-apps pipewire pipewire-devel \
+    alsa-pipewire wireplumber pipewire-pulse alsa-utils acpi acpid tlp \
+    powertop NetworkManager network-manager-applet font-awesome nerd-fonts
 }
 
 # Function: Enable necessary services
 enable_services() {
     echo "Enabling necessary services..."
-    sudo ln -s /etc/sv/NetworkManager /var/service
-    sudo ln -s /etc/sv/acpid /var/service
+    for service in NetworkManager acpid; do
+        sudo ln -s /etc/sv/$service /var/service
+    done
 }
 
-# Function: Install nirucon-suckless and configurations
+# Function: Install and setup nirucon-suckless and configurations
 setup_suckless() {
     echo "Installing nirucon-suckless and configurations..."
-
-    # Create necessary directories
     mkdir -p ~/Git ~/.config/suckless ~/.dwm ~/.config/dunst
     git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
 
     # Clone and copy repositories
-    declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "havamal")
-    for repo in "${repos[@]}"; do
+    for repo in "nirubar-dwm-void" "dunstrc" "srplay-dmenu" "havamal"; do
         git clone https://github.com/nirucon/$repo ~/Git/$repo
         cp -rf ~/Git/$repo ~/.config/suckless/
     done
@@ -80,8 +77,8 @@ setup_suckless() {
     chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void ~/.config/nirucon-greeter/greeter
 
     # Insert nirubar-dwm in .xinitrc
-    line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
-    comment_line="# Start nirubar-dwm-*"
+    local line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
+    local comment_line="# Start nirubar-dwm-*"
     if [[ -f ~/.xinitrc ]]; then
         sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
         echo "Line inserted successfully."
@@ -135,7 +132,7 @@ install_dunst_config() {
 # Function: Install additional packages
 install_additional_packages() {
     echo "Installing additional packages..."
-    sudo xbps-install -S fastfetch playerctl pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano xarchiver xclip htop curl libnotify jq bc rofi lxappearance --yes
+    sudo xbps-install -S fastfetch playerctl pcmanfm arandr nitrogen picom openssh cmus scrot gnupg pass brightnessctl mpv dunst unzip nano xarchiver xclip htop curl libnotify jq bc rofi lxappearance
 }
 
 # Function: Install Web Browsers
@@ -143,7 +140,7 @@ install_web_browsers() {
     read -p "Do you want to install web browsers (Firefox, Surf)? [Y/n]: " browser_response
     browser_response=${browser_response,,}
     if [[ "$browser_response" =~ ^(yes|y| ) ]] || [[ -z "$browser_response" ]]; then
-        sudo xbps-install -S firefox surf --yes
+        sudo xbps-install -S firefox surf
     fi
 }
 
@@ -163,7 +160,7 @@ install_rofi_theme() {
 # Function: Clean up
 clean_up() {
     echo "Cleaning up..."
-    rm -rf ~/Git/nirucon-suckless ~/Git/nirubar-dwm-void ~/Git/havamal ~/Git/srplay-dmenu ~/Git/nirucon-death-grubtheme ~/Git/dunstrc
+    rm -rf ~/Git/{nirucon-suckless,nirubar-dwm-void,havamal,srplay-dmenu,nirucon-death-grubtheme,dunstrc}
 }
 
 # Function: Reboot the system
