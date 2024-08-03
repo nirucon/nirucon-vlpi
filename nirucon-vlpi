@@ -54,88 +54,54 @@ enable_services() {
     sudo ln -s /etc/sv/acpid /var/service
 }
 
-# Function: Setup suckless tools
-setup_suckless_tools() {
-    echo "Setting up suckless tools..."
-    
-    # Clone the repository
-    if git clone https://github.com/nirucon/nirucon-suckless; then
-        echo "Repository cloned successfully."
-        
-        mkdir -p ~/.config/suckless
-        rm -rf ~/.config/suckless/dwm ~/.config/suckless/st ~/.config/suckless/dmenu ~/.config/suckless/slock
-        
-        # Move the directories if they exist
-        if [ -d "nirucon-suckless/dwm" ]; then
-            mv nirucon-suckless/dwm ~/.config/suckless/
-        fi
-        if [ -d "nirucon-suckless/st" ]; then
-            mv nirucon-suckless/st ~/.config/suckless/
-        fi
-        if [ -d "nirucon-suckless/dmenu" ]; then
-            mv nirucon-suckless/dmenu ~/.config/suckless/
-        fi
-        if [ -d "nirucon-suckless/slock" ]; then
-            mv nirucon-suckless/slock ~/.config/suckless/
-        fi
+# Function: Install nirucon-suckless
+setup_suckless() {
+    echo "Installing nirucon-suckless and configurations..."
 
-        # Build and install the tools
-        cd ~/.config/suckless/dwm && sudo make install
-        cd ~/.config/suckless/st && sudo make install
-        cd ~/.config/suckless/dmenu && sudo make install
-        cd ~/.config/suckless/slock && sudo make install
+    # Create necessary directories
+    mkdir -p ~/Git && git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
+    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
 
-        # Move configuration files if they exist
-        echo "Moving configuration files..."
-        mkdir -p ~/.dwm
-        if [ -f "nirucon-suckless/autostart.sh" ]; then
-            mv -f nirucon-suckless/autostart.sh ~/.dwm
-        else
-            echo "autostart.sh not found."
-        fi
-        
-        if [ -f "nirucon-suckless/.xinitrc" ]; then
-            cp -f nirucon-suckless/.xinitrc ~/
-            echo ".xinitrc copied to home directory."
-        else
-            echo ".xinitrc not found in the cloned repository."
-        fi
-        
-        if [ -f "nirucon-suckless/.bashrc" ]; then
-            cp -f nirucon-suckless/.bashrc ~/
-        else
-            echo ".bashrc not found."
-        fi
-        
-        if [ -f "nirucon-suckless/.bash-aliases-void" ]; then
-            cp -f nirucon-suckless/.bash-aliases-void ~/
-        else
-            echo ".bash-aliases-void not found."
-        fi
-        
-        if [ -f "nirucon-suckless/issue" ]; then
-            sudo cp -f nirucon-suckless/issue /etc/
-        else
-            echo "issue not found."
-        fi
+    # Clone repositories
+    declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "havamal")
+    for repo in "${repos[@]}"; do
+        rm -rf ~/Git/$repo
+        git clone https://github.com/nirucon/$repo ~/Git/$repo
+    done
 
-        # Clean up cloned repository
-        echo "Cleaning up cloned repository..."
-        rm -rf nirucon-suckless
+    # Copy configurations and scripts
+    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
+    cp -rf ~/Git/dunstrc/* ~/.config/dunst
+    cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
 
-        # Insert Nirucon DWM Bar in .xinitrc
-        echo "Configuring Nirucon DWM Bar in .xinitrc..."
-        line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
-        comment_line="# Start nirubar-dwm-*"
-        if [[ -f ~/.xinitrc ]]; then
-            sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
-            echo "Line inserted successfully."
-        else
-            echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
-        fi
+    # Build and install suckless tools
+    declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
+    for dir in "${suckless_dirs[@]}"; do
+        sudo make -C ~/.config/suckless/$dir clean install
+    done
+
+    # Copy dotfiles and configuration files
+    cp -f ~/Git/nirucon-suckless/.xinitrc ~/
+    cp -f ~/Git/nirucon-suckless/autostart.sh ~/.dwm
+    cp -f ~/Git/nirucon-suckless/.bashrc ~/
+    cp -f ~/Git/nirucon-suckless/.bash_aliases_void ~/
+    cp -rf ~/Git/nirucon-suckless/nirucon-wallpapers ~/Pictures/
+    sudo cp -f ~/Git/nirucon-suckless/issue /etc/
+    chmod +x ~/.dwm/autostart.sh ~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void ~/.config/nirucon-greeter/greeter
+
+    # Insert nirubar-dwm in .xinitrc
+    line_to_insert="~/.config/suckless/nirubar-dwm-void/nirubar-dwm-void &"
+    comment_line="# Start nirubar-dwm-*"
+    if [[ -f ~/.xinitrc ]]; then
+        sed -i "/$comment_line/a $line_to_insert" ~/.xinitrc
+        echo "Line inserted successfully."
     else
-        echo "Failed to clone the nirucon-suckless repository. Please check your internet connection or the repository URL."
+        echo "~/.xinitrc not found. Please ensure you have the file in your home directory."
     fi
+
+    # Clean up cloned repositories
+    echo "Cleaning up cloned repositories..."
+    rm -rf ~/Git/nirucon-suckless ~/Git/nirubar-dwm-void ~/Git/dunstrc ~/Git/srplay-dmenu ~/Git/havamal
 }
 
 # Function: Install Havamal script
@@ -237,7 +203,7 @@ update_system
 add_repos
 install_core_packages
 enable_services
-setup_suckless_tools
+setup_suckless
 install_havamal
 install_srplay_dmenu
 install_grub_theme
