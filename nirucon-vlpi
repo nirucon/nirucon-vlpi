@@ -98,9 +98,9 @@ install_pipewire() {
     sudo ln -s /etc/sv/wireplumber /var/service/
 
     # Optionally, disable PulseAudio if it's installed
-    #if sudo xbps-query -R pulseaudio; then
-    #    sudo xbps-remove -y pulseaudio
-    #fi
+    if sudo xbps-query -R pulseaudio; then
+        sudo xbps-remove -y pulseaudio
+    fi
 
     # Create PipeWire configuration directory if it doesn't exist
     mkdir -p ~/.config/pipewire
@@ -110,9 +110,6 @@ install_pipewire() {
     cp /etc/pipewire/media-session.d/media-session.conf ~/.config/pipewire/media-session.conf
 
     echo "PipeWire and related tools have been installed and enabled. Reboot your system to apply the changes."
-
-    # Reboot the system
-    sudo reboot
 }
 
 # Function: Install optional packages based on user choice
