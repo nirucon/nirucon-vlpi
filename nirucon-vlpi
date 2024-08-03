@@ -90,6 +90,50 @@ install_fonts() {
     done
 }
 
+# Function: Enable NetworkManager
+enable_networkmanager() {
+    # Install NetworkManager and NetworkManager-tui if not already installed
+    if ! command -v nmcli >/dev/null 2>&1; then
+        echo "Installing NetworkManager and NetworkManager-tui..."
+        sudo xbps-install -S NetworkManager NetworkManager-tui
+    else
+        echo "NetworkManager is already installed."
+    fi
+
+    # Enable NetworkManager service
+    if [ ! -e /var/service/NetworkManager ]; then
+        echo "Enabling NetworkManager service..."
+        sudo ln -s /etc/sv/NetworkManager /var/service/
+    else
+        echo "NetworkManager service is already enabled."
+    fi
+
+    # Disable other network managers to avoid conflicts
+    if [ -e /var/service/dhcpcd ]; then
+        echo "Disabling dhcpcd service..."
+        sudo rm /var/service/dhcpcd
+    else
+        echo "dhcpcd service is already disabled."
+    fi
+
+    if [ -e /var/service/wpa_supplicant ]; then
+        echo "Disabling wpa_supplicant service..."
+        sudo rm /var/service/wpa_supplicant
+    else
+        echo "wpa_supplicant service is already disabled."
+    fi
+
+    # Start NetworkManager service
+    echo "Starting NetworkManager service..."
+    sudo sv up NetworkManager
+
+    # Verify NetworkManager status
+    echo "Verifying NetworkManager status..."
+    sudo sv status NetworkManager
+
+    echo "NetworkManager has been enabled and started successfully."
+}
+
 # Function: Prompt for reboot
 prompt_reboot() {
     read -p "Nirucon-VLPI is now installed. Start with: startx, but it's highly recommended to reboot. Do you want to reboot now? [Y/n]: " reboot_choice
@@ -107,6 +151,7 @@ main() {
     install_repos
     install_core_suckless
     install_fonts
+    enable_networkmanager
     prompt_reboot
 }
 
