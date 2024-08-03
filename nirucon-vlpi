@@ -36,15 +36,6 @@ confirm_proceed() {
     echo "Proceeding with installation..."
 }
 
-# Function: Prompt for reboot
-prompt_reboot() {
-    read -p "Nirucon-VOIDPI is now installed. Start with: startx, but it's highly recommended to reboot. Do you want to reboot now? [Y/n]: " reboot_choice
-    reboot_choice="${reboot_choice,,}"
-    if [[ "$reboot_choice" =~ ^(yes|y| ) ]] || [[ -z "$reboot_choice" ]]; then
-        sudo reboot
-    fi
-}
-
 # Function: Install repos
 install_repos() {
     echo "Adding nonfree repository and installing necessary tools..."
@@ -78,11 +69,17 @@ install_core_suckless() {
 
     # Update package list and install core dependencies
     sudo xbps-install -Syu
-    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
-                         freetype-devel fontconfig-devel xorg-server xinit \
-                         xsetroot xorg-fonts-type1 xorg-fonts-misc wget
-
+    sudo xbps-install -y xbps-install base-devel libX11-devel libXft-devel libXinerama-devel freetype-devel fontconfig-devel xorg-minimal xorg-fonts xrdb
     echo -e "\e[32mCore dependencies for suckless and minimal Xorg setup installed successfully!\e[0m"
+}
+
+# Function: Prompt for reboot
+prompt_reboot() {
+    read -p "Nirucon-VLPI is now installed. Start with: startx, but it's highly recommended to reboot. Do you want to reboot now? [Y/n]: " reboot_choice
+    reboot_choice="${reboot_choice,,}"
+    if [[ "$reboot_choice" =~ ^(yes|y| ) ]] || [[ -z "$reboot_choice" ]]; then
+        sudo reboot
+    fi
 }
 
 # Main function
