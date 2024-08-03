@@ -60,6 +60,34 @@ install_core_suckless() {
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
 
+# Function: Check and install fonts
+install_fonts() {
+    local fonts=("font-awesome" "mononoki-nerd-font")
+    local font_urls=("https://github.com/FortAwesome/Font-Awesome.git" "https://github.com/ryanoasis/nerd-fonts.git")
+
+    mkdir -p ~/.local/share/fonts
+
+    for i in "${!fonts[@]}"; do
+        if ! fc-list | grep -iq "${fonts[$i]}"; then
+            echo "Installing ${fonts[$i]}..."
+            if [[ "${fonts[$i]}" == "font-awesome" ]]; then
+                git clone --depth 1 "${font_urls[$i]}" /tmp/font-awesome
+                cp -r /tmp/font-awesome/webfonts/* ~/.local/share/fonts/
+                rm -rf /tmp/font-awesome
+            elif [[ "${fonts[$i]}" == "mononoki-nerd-font" ]]; then
+                mkdir -p /tmp/mononoki-nerd-font
+                wget -O /tmp/mononoki-nerd-font.zip "${font_urls[$i]}/releases/download/v2.1.0/Mononoki.zip"
+                unzip /tmp/mononoki-nerd-font.zip -d /tmp/mononoki-nerd-font
+                cp /tmp/mononoki-nerd-font/*.ttf ~/.local/share/fonts/
+                rm -rf /tmp/mononoki-nerd-font.zip /tmp/mononoki-nerd-font
+            fi
+            fc-cache -f -v
+        else
+            echo "${fonts[$i]} is already installed."
+        fi
+    done
+}
+
 # Function: Prompt for reboot
 prompt_reboot() {
     read -p "Nirucon-VLPI is now installed. Start with: startx, but it's highly recommended to reboot. Do you want to reboot now? [Y/n]: " reboot_choice
@@ -76,6 +104,7 @@ main() {
     confirm_proceed
     install_repos
     install_core_suckless
+    install_fonts
     prompt_reboot
 }
 
