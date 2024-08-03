@@ -126,9 +126,9 @@ install_suckless() {
     echo "nirucon-suckless, configurations and scripts installed successfully."
 }
 
-# Function: Check if a optional package is installed
+# Function: Check if a package is installed
 is_installed() {
-    xbps-query -Rx "$1" &> /dev/null
+    xbps-query -l | grep -qw "$1"
     return $?
 }
 
