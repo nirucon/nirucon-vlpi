@@ -61,7 +61,7 @@ install_core_suckless() {
     # Update package list and install core dependencies
     sudo xbps-install -Syu
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
-        libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal \
+        libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xautolock \
         xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
         cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl dunst \
         pamixer spotifyd playerctl jq rofi fastfetch
