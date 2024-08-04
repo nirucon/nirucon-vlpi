@@ -9,6 +9,7 @@ Nirucon-VLPI is a post-installation script designed for Void Linux. It automates
 - Clones and installs [nirucon-suckless](https://github.com/nirucon/nirucon-suckless) configuration, including `dwm`, `st`, `dmenu`, and `slock`.
 - Offers optional packages for installation, such as Firefox, Thunderbird, GIMP, and more.
 - Installs custom Rofi and CMUS themes.
+- Additional improvements and features may be added but may not listed here. Be sure to check the script for the latest updates.
 
 ## Disclaimer and Warning
 1. **No Responsibility**: Use this script at your own risk. The author does not take any responsibility for any changes or issues caused by this script.
