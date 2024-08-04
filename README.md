@@ -44,7 +44,7 @@ The script will guide you through the following steps:
 3. Confirming your intention to proceed.
 4. Adding the non-free repository.
 5. Installing core dependencies and essential packages.
-6. Cloning and installing Suckless tools and configurations.
+6. Cloning and installing [nirucon-suckless](https://github.com/nirucon/nirucon-suckless) and configurations.
 7. Installing optional packages based on your selection.
 8. Installing custom Rofi and CMUS themes.
 9. Prompting for a system reboot.
