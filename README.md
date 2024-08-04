@@ -50,7 +50,7 @@ The script will guide you through the following steps:
 8. Installing custom Rofi and CMUS themes.
 9. Prompting for a system reboot.
 
-## Donations
+## License
 Feel free to use and modify this script. Donations are welcome and appreciated: [PayPal](https://www.paypal.com/paypalme/nicklasrudolfsson)
 
 ## Contact
