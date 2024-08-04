@@ -141,7 +141,7 @@ is_installed() {
 
 # Function: Install optional packages
 install_optional_packages() {
-    declare -a packages=("firefox" "surf" "thunderbird" "bluefish" "filezilla" "gimp" "obs" "kdenlive")
+    declare -a packages=("firefox" "surf" "thunderbird" "pcmanfm" "bluefish" "filezilla" "gimp" "obs" "kdenlive")
     declare -a not_installed_packages=()
     declare -a selected_packages=()
     declare package_choice
