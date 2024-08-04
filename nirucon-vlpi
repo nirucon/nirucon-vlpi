@@ -118,7 +118,20 @@ install_suckless() {
     rm -rf ~/Git/srplay-dmenu
 
     # dwmexit-dmenu - dmenu script for suspend, logout, restart, reboot
-    # placeholder
+    echo "Installing dwmexit-dmenu script..."
+    rm -rf ~/Git/dwmexit-dmenu
+    git clone https://github.com/nirucon/dwmexit-dmenu ~/Git/dwmexit-dmenu
+    sudo cp -f ~/Git/dwmexit-dmenu/dwmexit-dmenu /usr/local/bin/
+    sudo chmod +x /usr/local/bin/dwmexit-dmenu
+    rm -rf ~/Git/dwmexit-dmenu
+
+    # system-optimizer-dmenu - script for optimizing system in dmenu
+    echo "Installing system-optimizer-dmenu script..."
+    rm -rf ~/Git/system-optimizer-dmenu
+    git clone https://github.com/nirucon/system-optimizer-dmenu ~/Git/system-optimizer-dmenu
+    sudo cp -f ~/Git/system-optimizer-dmenu/system-optimizer-dmenu /usr/local/bin/
+    sudo chmod +x /usr/local/bin/system-optimizer-dmenu
+    rm -rf ~/Git/system-optimizer-dmenu
 
     # havamal - script for random quotes in .bashrc
     echo "Installing havamal script..."
