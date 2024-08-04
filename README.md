@@ -56,6 +56,3 @@ Feel free to use and modify this script. Donations are welcome and appreciated: 
 - **Author**: Nicklas Rudolfsson
 - **GitHub**: [nirucon](https://github.com/nirucon)
 - **Email**: [n@rudolfsson.net](mailto:n@rudolfsson.net)
-
----
-This readme file provides a concise overview of the script's functionality, installation, usage, and disclaimers. For detailed script content, refer to the script file itself.
