@@ -64,7 +64,7 @@ install_core_suckless() {
         libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xautolock \
         xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
         cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl dunst \
-        pamixer spotifyd playerctl jq rofi fastfetch flameshot maim wget
+        pamixer spotifyd playerctl jq rofi fastfetch flameshot maim wget font-awesome font-awesome6
     
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
