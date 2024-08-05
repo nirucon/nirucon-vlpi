@@ -219,25 +219,85 @@ install_optional_packages() {
     fi
 }
 
+# Function: Install optional non-repo packages
+install_optional_non_repo_packages() {
+    declare -a non_repo_packages=("brave-browser")
+    declare -a not_installed_non_repo_packages=()
+    declare -a selected_non_repo_packages=()
+    declare package_choice
+
+    echo "Optional Non-Repo Packages Installation"
+    echo "Checking for already installed non-repo packages..."
+
+    for package in "${non_repo_packages[@]}"; do
+        if [[ "$package" == "brave-browser" && ! is_installed "brave-browser" ]]; then
+            not_installed_non_repo_packages+=("$package")
+        fi
+    done
+
+    if [[ ${#not_installed_non_repo_packages[@]} -eq 0 ]]; then
+        echo "All optional non-repo packages are already installed."
+        return
+    fi
+
+    read -p "Do you want to install some suggested optional packages and applications not available in official repos? You will be prompted for each install [Y]yes / [n]no (Yes default on enter): " initial_choice_non_repo
+    initial_choice_non_repo="${initial_choice_non_repo,,}" # Convert to lowercase
+
+    if [[ "$initial_choice_non_repo" =~ ^(yes|y| ) ]] || [[ -z "$initial_choice_non_repo" ]]; then
+        echo "Please answer with [Y]yes / [n]no (Yes is default if pressing enter) for each package."
+
+        for package in "${not_installed_non_repo_packages[@]}"; do
+            read -p "Do you want to install $package? [Y/n]: " package_choice
+            package_choice="${package_choice,,}" # Convert to lowercase
+            if [[ "$package_choice" =~ ^(yes|y| ) ]] || [[ -z "$package_choice" ]]; then
+                selected_non_repo_packages+=("$package")
+            fi
+        done
+
+        if [[ ${#selected_non_repo_packages[@]} -eq 0 ]]; then
+            echo -e "\e[31mNo optional non-repo packages selected for installation.\e[0m"
+            return
+        fi
+
+        echo "These non-repo packages will be installed:"
+        for package in "${selected_non_repo_packages[@]}"; do
+            echo "- $package"
+        done
+
+        while true; do
+            read -p "Are you sure you want to install all these? [Y]yes / [n]no / [c]choose again: " final_choice_non_repo
+            final_choice_non_repo="${final_choice_non_repo,,}" # Convert to lowercase
+            if [[ "$final_choice_non_repo" =~ ^(yes|y| ) ]] || [[ -z "$final_choice_non_repo" ]]; then
+                for package in "${selected_non_repo_packages[@]}"; do
+                    if [[ "$package" == "brave-browser" ]]; then
+                        install_brave_browser
+                    fi
+                done
+                echo -e "\e[32mSelected non-repo packages installed.\e[0m"
+                break
+            elif [[ "$final_choice_non_repo" == "no" || "$final_choice_non_repo" == "n" ]]; then
+                echo -e "\e[31mInstallation of optional non-repo packages aborted.\e[0m"
+                break
+            elif [[ "$final_choice_non_repo" == "choose" || "$final_choice_non_repo" == "c" ]]; then
+                install_optional_non_repo_packages
+                break
+            else
+                echo -e "\e[31mInvalid choice. Please select [Y]yes / [n]no / [c]choose again.\e[0m"
+            fi
+        done
+    else
+        echo "Skipping optional non-repo installations and continuing with the script."
+    fi
+}
+
 # Function: Install Brave browser from GitHub if not installed
 install_brave_browser() {
-    echo "Packages not in Void repos..."
-    if ! is_installed "brave-browser"; then
-        read -p "Brave browser is not installed and not available in Void repos. Do you want to install it using gitbhb script? [Y]yes/[n]no: " brave_choice
-        brave_choice="${brave_choice,,}" # Convert to lowercase
-        if [[ "$brave_choice" =~ ^(yes|y| ) ]] || [[ -z "$brave_choice" ]]; then
-            git clone https://github.com/nirucon/brave-voidlinux.git
-            cd brave-voidlinux
-            ./brave.sh
-            cd ..
-            rm -rf brave-voidlinux
-            echo -e "\e[32mBrave browser installed successfully.\e[0m"
-        else
-            echo "Skipping Brave browser installation."
-        fi
-    else
-        echo "Brave browser is already installed."
-    fi
+    git clone https://github.com/nirucon/brave-voidlinux.git
+    cd brave-voidlinux
+    ./brave.sh
+    cd ..
+    rm -rf brave-voidlinux
+    echo -e "\e[32mBrave browser installed successfully.\e[0m"
 }
 
 # Function: Install and set the Rofi custom theme
@@ -310,7 +370,7 @@ main() {
     install_core_suckless
     install_suckless
     install_optional_packages
-    install_brave_browser
+    install_optional_non_repo_packages
     install_rofi_theme
     install_cmus_theme
     prompt_reboot
