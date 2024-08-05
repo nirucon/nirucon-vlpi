@@ -219,6 +219,27 @@ install_optional_packages() {
     fi
 }
 
+# Function: Install Brave browser from GitHub if not installed
+install_brave_browser() {
+    echo "Packages not in Void repos..."
+    if ! is_installed "brave-browser"; then
+        read -p "Brave browser is not installed and not available in Void repos. Do you want to install it using gitbhb script? [Y]yes/[n]no: " brave_choice
+        brave_choice="${brave_choice,,}" # Convert to lowercase
+        if [[ "$brave_choice" =~ ^(yes|y| ) ]] || [[ -z "$brave_choice" ]]; then
+            git clone https://github.com/nirucon/brave-voidlinux.git
+            cd brave-voidlinux
+            ./brave.sh
+            cd ..
+            rm -rf brave-voidlinux
+            echo -e "\e[32mBrave browser installed successfully.\e[0m"
+        else
+            echo "Skipping Brave browser installation."
+        fi
+    else
+        echo "Brave browser is already installed."
+    fi
+}
+
 # Function: Install and set the Rofi custom theme
 install_rofi_theme() {
     echo "Installing and setting the Rofi custom theme..."
@@ -289,6 +310,7 @@ main() {
     install_core_suckless
     install_suckless
     install_optional_packages
+    install_brave_browser
     install_rofi_theme
     install_cmus_theme
     prompt_reboot
