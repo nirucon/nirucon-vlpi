@@ -81,7 +81,7 @@ install_suckless() {
         git clone https://github.com/nirucon/$repo ~/Git/$repo
     done
 
-    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/.config/suckless
+    cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/Git/nirucon-suckless/dwm_systray ~/.config/suckless
     cp -rf ~/Git/dunstrc/* ~/.config/dunst
     cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
     sudo cp -fr ~/Git/nirucon-suckless/fonts/* /usr/share/fonts/
