@@ -243,7 +243,8 @@ is_installed_nonrepo() {
 install_brave_browser() {
     git clone https://github.com/nirucon/brave-voidlinux
     cd brave-voidlinux
-    ./install.sh
+    chmod +x install-update-brave-voidlinux.sh
+    ./install-update-brave-voidlinux.sh
     cd ..
     rm -rf brave-voidlinux
 }
