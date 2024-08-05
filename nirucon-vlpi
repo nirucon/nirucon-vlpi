@@ -246,16 +246,16 @@ install_brave_browser() {
 }
 
 # Function to install another hypothetical package (example)
-install_another_package() {
-    echo "Installing another package..."
-    # Add installation steps here
-}
+#install_another_package() {
+#    echo "Installing another package..."
+#    # Add installation steps here
+#}
 
 # Function: Install optional non-repo packages
 install_optional_non_repo_packages() {
     declare -A non_repo_packages=(
         ["brave-browser"]="install_brave_browser"
-        ["another-package"]="install_another_package" # Example additional package
+#        ["another-package"]="install_another_package" # Example additional package
     )
     declare -a not_installed_non_repo_packages=()
     declare -a selected_non_repo_packages=()
