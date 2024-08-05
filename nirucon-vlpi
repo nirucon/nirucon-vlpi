@@ -225,8 +225,8 @@ install_optional_packages() {
 is_installed_nonrepo() {
     package_name=$1
     if [[ "$package_name" == "brave-browser" ]]; then
-        # Check if any package starting with brave-browser is installed
-        if command -v brave-browser &> /dev/null || command -v brave-browser-* &> /dev/null; then
+        # Check if any executable starting with brave-browser is installed
+        if ls /usr/bin/brave-browser* &> /dev/null || ls /usr/local/bin/brave-browser* &> /dev/null; then
             return 0
         else
             return 1
