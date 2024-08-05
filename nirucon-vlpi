@@ -143,6 +143,9 @@ install_suckless() {
     rm -rf ~/Git/havamal
     echo -e "\e[32mThe 'havamal' script has been installed and the repository has been removed.\e[0m"
 
+    # Clean up
+    rm -rf ~/Git/dunstrc ~/Git/nirubar-dwm-void ~/Git/nirucon-suckless
+
     echo -e "\e[32mNirucon-suckless, configurations and scripts installed successfully.\e[0m"
 }
 
