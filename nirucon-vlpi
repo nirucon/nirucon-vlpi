@@ -75,9 +75,9 @@ install_core_suckless() {
 install_suckless() {
     echo "Installing nirucon-suckless, configurations and scripts..."
     mkdir -p ~/Git && git clone https://github.com/nirucon/nirucon-suckless ~/Git/nirucon-suckless
-    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/.config/dunst
+    mkdir -p ~/.config/suckless ~/.dwm ~/Music ~/Downloads ~/Pictures ~/Videos ~/Temp ~/Scripts ~/.config/dunst
 
-    declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "dwmexit-dmenu" "havamal")
+    declare -a repos=("nirubar-dwm-void" "dunstrc" "srplay-dmenu" "dwmexit-dmenu" "havamal" "nirucon-suckless-modscript" "pipevoid")
     for repo in "${repos[@]}"; do
         rm -rf ~/Git/$repo
         git clone https://github.com/nirucon/$repo ~/Git/$repo
@@ -86,6 +86,8 @@ install_suckless() {
     cp -rf ~/Git/nirubar-dwm-void/ ~/Git/nirucon-suckless/dmenu ~/Git/nirucon-suckless/st ~/Git/nirucon-suckless/slock ~/Git/nirucon-suckless/dwm ~/Git/nirucon-suckless/dwm_systray ~/.config/suckless
     cp -rf ~/Git/dunstrc/* ~/.config/dunst
     cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
+    cp -fr ~/Git/nirucon-suckless-modscript/*sh ~/Scripts
+    cp -fr ~/Git/pipevoid/*sh ~/Scripts
     sudo cp -fr ~/Git/nirucon-suckless/fonts/* /usr/share/fonts/
 
     declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
@@ -146,7 +148,7 @@ install_suckless() {
     echo -e "\e[32mThe 'havamal' script has been installed and the repository has been removed.\e[0m"
 
     # Clean up
-    rm -rf ~/Git/dunstrc ~/Git/nirubar-dwm-void ~/Git/nirucon-suckless
+    rm -rf ~/Git/dunstrc ~/Git/nirubar-dwm-void ~/Git/nirucon-suckless ~/Git/nirucon-suckless-modscript ~/Git/pipevoid
 
     echo -e "\e[32mNirucon-suckless, configurations and scripts installed successfully.\e[0m"
 }
