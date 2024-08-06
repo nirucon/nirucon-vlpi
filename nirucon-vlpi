@@ -64,7 +64,7 @@ install_core_suckless() {
         freetype-devel fontconfig-devel xorg-minimal xautolock xorg-fonts xsetroot setxkbmap xrdb \
         nano unzip xarchiver wget curl nitrogen picom alsa-utils \
         calcurse xbacklight connman dunst pamixer spotifyd playerctl cmus mpv mpc jq rofi fastfetch flameshot maim scrot \
-        google-fonts-ttf font-awesome font-awesome6 ttf-ubuntu-font-family terminus-font nerd-fonts
+        google-fonts-ttf font-awesome font-awesome6 ttf-ubuntu-font-family terminus-font nerd-fonts figlet
         # linux-firmware-intel
         # pipewire pipewire-devel alsa-pipewire wireplumber pulseaudio
     
