@@ -88,9 +88,10 @@ install_suckless() {
     cp -fr ~/Git/nirucon-suckless/nirucon-greeter ~/.config/
     cp -fr ~/Git/nirucon-suckless-modscript/*sh ~/Scripts
     cp -fr ~/Git/pipevoid/*sh ~/Scripts
+    chmod +x ~/Git/nirucon-suckless-modscript/*sh ~/Git/pipevoid/*sh
     sudo cp -fr ~/Git/nirucon-suckless/fonts/* /usr/share/fonts/
 
-    declare -a suckless_dirs=("dwm" "dmenu" "slock" "st")
+    declare -a suckless_dirs=("dwm_systray" "dmenu" "slock" "st")
     for dir in "${suckless_dirs[@]}"; do
         sudo make -C ~/.config/suckless/$dir clean install
     done
