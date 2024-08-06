@@ -60,11 +60,13 @@ install_core_suckless() {
 
     # Update package list and install core dependencies
     sudo xbps-install -Syu
-    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel \
-        libXrandr-devel imlib2-devel freetype-devel fontconfig-devel xorg-minimal xautolock \
-        xorg-fonts xsetroot setxkbmap xrdb nano unzip wget nitrogen picom alsa-utils \
-        cmus mpc wpa_supplicant NetworkManager calcurse xbacklight connman curl dunst \
-        pamixer spotifyd playerctl jq rofi fastfetch flameshot maim wget font-awesome font-awesome6
+    sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel imlib2-devel \
+        freetype-devel fontconfig-devel xorg-minimal xautolock xorg-fonts xsetroot setxkbmap xrdb \
+        nano unzip xarchiver wget curl nitrogen picom alsa-utils \
+        calcurse xbacklight connman dunst pamixer spotifyd playerctl cmus mpv mpc jq rofi fastfetch flameshot maim scrot \
+        google-fonts-ttf font-awesome font-awesome6 ttf-ubuntu-font-family terminus-font nerd-fonts
+        # linux-firmware-intel
+        # pipewire pipewire-devel alsa-pipewire wireplumber pulseaudio
     
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
