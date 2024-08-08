@@ -43,14 +43,15 @@ confirm_proceed() {
     echo "Proceeding with installation..."
 }
 
+# Function: Update system
+update_system() {
+    sudo xbps-install -Syu
+}
+
 # Function: Install repos
 install_repos() {
     echo "Adding nonfree repository..."
-
-    # Update package list and install nonfree repository
-    sudo xbps-install -Syu
     sudo xbps-install -y void-repo-nonfree
-
     echo -e "\e[32mNonfree repository and tools installed successfully.\e[0m"
 }
 
@@ -58,17 +59,13 @@ install_repos() {
 install_core_suckless() {
     echo "Installing core dependencies for suckless, minimal Xorg setup and some essential packages..."
 
-    # Update package list and install core dependencies
-    sudo xbps-install -Syu
     sudo xbps-install -y base-devel libX11-devel libXft-devel libXinerama-devel libXrandr-devel imlib2-devel \
         freetype-devel fontconfig-devel xorg-minimal xautolock xorg-fonts xsetroot setxkbmap xrdb \
         nano unzip xarchiver wget curl nitrogen picom alsa-utils volumeicon \
         calcurse xbacklight connman dunst pamixer spotifyd playerctl cmus mpv mpc jq rofi fastfetch flameshot maim scrot \
         google-fonts-ttf font-awesome font-awesome6 ttf-ubuntu-font-family terminus-font nerd-fonts figlet \
-        pipewire wireplumber pulseaudio pavucontrol qpwgraph pirewire-alsa pipewire-pulse pipewire-jack
-        # linux-firmware-intel
-        # ...
-    
+        pipewire wireplumber pulseaudio pavucontrol qpwgraph pipewire-alsa pipewire-pulse pipewire-jack \
+        linux-firmware-intel
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
 
@@ -399,6 +396,7 @@ main() {
     display_welcome
     check_internet_connection
     confirm_proceed
+    update_system
     install_repos
     install_core_suckless
     install_suckless
