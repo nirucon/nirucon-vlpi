@@ -64,8 +64,8 @@ install_core_suckless() {
         nano unzip xarchiver wget curl nitrogen picom alsa-utils volumeicon \
         calcurse xbacklight connman dunst pamixer spotifyd playerctl cmus mpv mpc jq rofi fastfetch flameshot maim scrot \
         google-fonts-ttf font-awesome font-awesome6 ttf-ubuntu-font-family terminus-font nerd-fonts figlet \
-        pipewire wireplumber pulseaudio pavucontrol qpwgraph pipewire-alsa pipewire-pulse pipewire-jack \
-        linux-firmware-intel
+        pipewire wireplumber pavucontrol qpwgraph \
+        # linux-firmware-intel
     echo -e "\e[32mCore dependencies for suckless, minimal Xorg setup, and essential packages installed!\e[0m"
 }
 
