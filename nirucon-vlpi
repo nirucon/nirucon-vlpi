@@ -396,13 +396,21 @@ main() {
     display_welcome
     check_internet_connection
     confirm_proceed
+    echo "Updating system..."
     update_system
+    echo "Installing repositories..."
     install_repos
+    echo "Installing core suckless dependencies..."
     install_core_suckless
+    echo "Installing suckless utilities..."
     install_suckless
+    echo "Installing optional packages..."
     install_optional_packages
+    echo "Installing optional non-repo packages..."
     install_optional_non_repo_packages
+    echo "Installing Rofi theme..."
     install_rofi_theme
+    echo "Installing CMUS themes..."
     install_cmus_theme
     prompt_reboot
 }
